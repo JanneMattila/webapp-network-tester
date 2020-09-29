@@ -6,11 +6,11 @@ namespace WebApp.Models
     public class CommandRequest
     {
         [JsonPropertyName("commands")]
-        public List<string> Command { get; set; }
+        public List<string> Commands { get; set; }
 
         public CommandRequest()
         {
-            Command = new List<string>();
+            Commands = new List<string>();
         }
     }
 }
