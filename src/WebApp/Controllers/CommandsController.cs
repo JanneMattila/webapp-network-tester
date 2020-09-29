@@ -3,6 +3,7 @@ using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using StackExchange.Redis;
 using System;
 using System.IO;
 using System.Linq;
@@ -64,6 +65,7 @@ namespace WebApp.Controllers
                         {
                             "HTTP" => await ExecuteHttpAsync(parameters, childRequest),
                             "BLOB" => await ExecuteBlobAsync(parameters),
+                            "REDIS" => await ExecuteRedisAsync(parameters),
                             _ => string.Empty
                         };
                         if (!string.IsNullOrEmpty(input))
@@ -123,6 +125,24 @@ namespace WebApp.Controllers
                 using var stream = new MemoryStream(Encoding.UTF8.GetBytes(parameters[1]));
                 var blobResponse = await blobClient.UploadAsync(stream);
                 return $"Wrote {blobResponse.Value.ETag}{Environment.NewLine}";
+            }
+        }
+
+        private async Task<string> ExecuteRedisAsync(string[] parameters)
+        {
+            var param = parameters.Reverse().ToArray();
+            using var redis = ConnectionMultiplexer.Connect(param[0]);
+            var db = redis.GetDatabase();
+
+            if (parameters[0] == "GET")
+            {
+                var value = await db.StringGetAsync(parameters[1]);
+                return $"GET: {value}{Environment.NewLine}";
+            }
+            else
+            {
+                await db.StringSetAsync(parameters[2], parameters[1]);
+                return $"SET: {parameters[2]}={parameters[1]}{Environment.NewLine}";
             }
         }
     }
