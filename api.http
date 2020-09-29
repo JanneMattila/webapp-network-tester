@@ -6,7 +6,10 @@ Content-Type: application/json
 
 {
   "commands": [
-    "POST http://localhost:5000/api/commands",
-    "GET http://localhost:5000/swagger"
+    "HTTP POST http://localhost:5000/api/commands",
+    "HTTP GET http://localhost:5000/",
+    "HTTP GET http://localhost:5000/swagger",
+    "BLOB GET data.csv files DefaultEndpointsProtocol=https;AccountName=demoaccount;AccountKey=key;EndpointSuffix=core.windows.net",
+    "BLOB POST hello data2.csv files DefaultEndpointsProtocol=https;AccountName=demoaccount;AccountKey=key;EndpointSuffix=core.windows.net"
   ]
 }

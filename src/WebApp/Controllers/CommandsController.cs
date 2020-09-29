@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Connections.Features;
+﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -30,11 +31,19 @@ namespace WebApp.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public async Task<ContentResult> Post(CommandRequest request)
         {
-            var input = request.Commands.FirstOrDefault();
             var output = new StringBuilder();
-            output.AppendLine($"-> Start: {input}");
-            if (!string.IsNullOrEmpty(input))
-            {
+            var continueCommands = true;
+
+            while (continueCommands)
+            { 
+                continueCommands = false;
+                var input = request.Commands.FirstOrDefault();
+                if (string.IsNullOrEmpty(input))
+                {
+                    break;
+                }
+
+                output.AppendLine($"-> Start: {input}");
                 var commands = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 if (commands.Length > 0)
                 {
@@ -42,44 +51,79 @@ namespace WebApp.Controllers
                     childRequest.Commands.AddRange(request.Commands.Skip(1));
 
                     var parameters = commands.Skip(1).ToArray();
-                    var childOutput = commands[0] switch
+                    if (commands.Length > 2 &&
+                        (commands[0] != "HTTP" ||
+                        commands[1] != "POST"))
                     {
-                        "GET" => await ExecuteGetAsync(parameters),
-                        "POST" => await ExecutePostAsync(parameters, childRequest),
-                        _ => string.Empty
-                    };
-                    if (!string.IsNullOrEmpty(input))
+                        continueCommands = true;
+                    }
+
+                    try
                     {
-                        output.Append(childOutput);
+                        var childOutput = commands[0] switch
+                        {
+                            "HTTP" => await ExecuteHttpAsync(parameters, childRequest),
+                            "BLOB" => await ExecuteBlobAsync(parameters),
+                            _ => string.Empty
+                        };
+                        if (!string.IsNullOrEmpty(input))
+                        {
+                            output.Append(childOutput);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        output.AppendLine(ex.ToString());
                     }
                 }
-            }
+                output.AppendLine($"<- End: {input}");
 
-            output.AppendLine($"<- End: {input}");
+                request.Commands = request.Commands.Skip(1).ToList();
+            }
             return Content(output.ToString());
         }
-        private async Task<string> ExecuteGetAsync(string[] parameters)
+        private async Task<string> ExecuteHttpAsync(string[] parameters, CommandRequest request)
         {
             using var client = new HttpClient();
-            var response = await client.GetAsync(parameters[0]);
+            HttpResponseMessage response;
+            if (parameters[0] == "GET")
+            {
+                response = await client.GetAsync(parameters[1]);
+            }
+            else
+            {
+                var json = JsonSerializer.Serialize(request);
+                var content = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
+                response = await client.PostAsync(parameters[1], content);
+            }
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadAsStringAsync();
             }
-            return $"{response.StatusCode} {response.ReasonPhrase}";
+            return $"{response.StatusCode} {response.ReasonPhrase}{Environment.NewLine}";
         }
 
-        private async Task<string> ExecutePostAsync(string[] parameters, CommandRequest request)
+        private async Task<string> ExecuteBlobAsync(string[] parameters)
         {
-            var json = JsonSerializer.Serialize(request);
-            using var client = new HttpClient();
-            var content = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
-            var response = await client.PostAsync(parameters[0], content);
-            if (response.IsSuccessStatusCode)
+            var param = parameters.Reverse().ToArray();
+            var blobServiceClient = new BlobServiceClient(param[0]);
+            var blobContainerClient = blobServiceClient.GetBlobContainerClient(param[1]);
+            await blobContainerClient.CreateIfNotExistsAsync(PublicAccessType.None);
+            var blobClient = blobContainerClient.GetBlobClient(param[2]);
+
+            if (parameters[0] == "GET")
             {
-                return await response.Content.ReadAsStringAsync();
+                var content = await blobClient.DownloadAsync();
+                using var reader = new StreamReader(content.Value.Content);
+                return await reader.ReadToEndAsync();
             }
-            return $"{response.StatusCode} {response.ReasonPhrase}";
+            else
+            {
+                await blobClient.DeleteIfExistsAsync();
+                using var stream = new MemoryStream(Encoding.UTF8.GetBytes(parameters[1]));
+                var blobResponse = await blobClient.UploadAsync(stream);
+                return $"Wrote {blobResponse.Value.ETag}{Environment.NewLine}";
+            }
         }
     }
 }
