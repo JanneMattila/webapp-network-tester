@@ -32,7 +32,7 @@ namespace WebApp.Controllers
         {
             var input = request.Commands.FirstOrDefault();
             var output = new StringBuilder();
-            output.AppendLine("-> Start");
+            output.AppendLine($"-> Start: {input}");
             if (!string.IsNullOrEmpty(input))
             {
                 var commands = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -55,7 +55,7 @@ namespace WebApp.Controllers
                 }
             }
 
-            output.AppendLine("<- End");
+            output.AppendLine($"<- End: {input}");
             return Content(output.ToString());
         }
         private async Task<string> ExecuteGetAsync(string[] parameters)
