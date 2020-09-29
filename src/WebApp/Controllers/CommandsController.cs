@@ -7,6 +7,7 @@ using StackExchange.Redis;
 using System;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
@@ -66,6 +67,7 @@ namespace WebApp.Controllers
                             "HTTP" => await ExecuteHttpAsync(parameters, childRequest),
                             "BLOB" => await ExecuteBlobAsync(parameters),
                             "REDIS" => await ExecuteRedisAsync(parameters),
+                            "NSLOOKUP" => await ExecuteNsLookUpAsync(parameters),
                             _ => string.Empty
                         };
                         if (!string.IsNullOrEmpty(input))
@@ -144,6 +146,17 @@ namespace WebApp.Controllers
                 await db.StringSetAsync(parameters[2], parameters[1]);
                 return $"SET: {parameters[2]}={parameters[1]}{Environment.NewLine}";
             }
+        }
+
+        private async Task<string> ExecuteNsLookUpAsync(string[] parameters)
+        {
+            var output = new StringBuilder();
+            var addresses = await Dns.GetHostAddressesAsync(parameters[0]);
+            foreach (var address in addresses)
+            {
+                output.AppendLine($"IP: {address}");
+            }
+            return output.ToString();
         }
     }
 }
