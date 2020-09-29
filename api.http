@@ -6,6 +6,7 @@ Content-Type: application/json
 
 {
   "commands": [
-    "POST http://localhost:5000/api/commands"
+    "POST http://localhost:5000/api/commands",
+    "GET http://localhost:5000/swagger"
   ]
 }
