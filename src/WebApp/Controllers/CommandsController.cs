@@ -44,7 +44,8 @@ namespace WebApp.Controllers
                     var parameters = commands.Skip(1).ToArray();
                     var childOutput = commands[0] switch
                     {
-                        "POST" => await ExecutePost(parameters, childRequest),
+                        "GET" => await ExecuteGetAsync(parameters),
+                        "POST" => await ExecutePostAsync(parameters, childRequest),
                         _ => string.Empty
                     };
                     if (!string.IsNullOrEmpty(input))
@@ -57,8 +58,18 @@ namespace WebApp.Controllers
             output.AppendLine("<- End");
             return Content(output.ToString());
         }
+        private async Task<string> ExecuteGetAsync(string[] parameters)
+        {
+            using var client = new HttpClient();
+            var response = await client.GetAsync(parameters[0]);
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsStringAsync();
+            }
+            return $"{response.StatusCode} {response.ReasonPhrase}";
+        }
 
-        private async Task<string> ExecutePost(string[] parameters, CommandRequest request)
+        private async Task<string> ExecutePostAsync(string[] parameters, CommandRequest request)
         {
             var json = JsonSerializer.Serialize(request);
             using var client = new HttpClient();
