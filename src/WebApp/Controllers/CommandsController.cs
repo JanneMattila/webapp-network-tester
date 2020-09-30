@@ -1,5 +1,6 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using DnsClient;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -67,6 +68,7 @@ namespace WebApp.Controllers
                             "HTTP" => await ExecuteHttpAsync(parameters, childRequest),
                             "BLOB" => await ExecuteBlobAsync(parameters),
                             "REDIS" => await ExecuteRedisAsync(parameters),
+                            "IPLOOKUP" => await ExecuteIpLookUpAsync(parameters),
                             "NSLOOKUP" => await ExecuteNsLookUpAsync(parameters),
                             _ => string.Empty
                         };
@@ -148,13 +150,30 @@ namespace WebApp.Controllers
             }
         }
 
-        private async Task<string> ExecuteNsLookUpAsync(string[] parameters)
+        private async Task<string> ExecuteIpLookUpAsync(string[] parameters)
         {
             var output = new StringBuilder();
             var addresses = await Dns.GetHostAddressesAsync(parameters[0]);
             foreach (var address in addresses)
             {
                 output.AppendLine($"IP: {address}");
+            }
+            return output.ToString();
+        }
+
+        private async Task<string> ExecuteNsLookUpAsync(string[] parameters)
+        {
+            var output = new StringBuilder();
+            var lookup = new LookupClient(new LookupClientOptions()
+            {
+                UseCache = false
+            });
+
+            var query = await lookup.QueryAsync(parameters[0], QueryType.ANY);
+            output.AppendLine($"NS: {query.NameServer.Address}");
+            foreach (var address in query.Answers)
+            {
+                output.AppendLine($"RECORD: {address}");
             }
             return output.ToString();
         }
