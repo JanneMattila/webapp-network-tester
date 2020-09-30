@@ -87,7 +87,7 @@ SET: mycache=value1
 <- End: REDIS SET hello2 mycache account.redis.cache.windows.net:6380,password=key,ssl=True,abortConnect=False
 -> Start: REDIS GET mycache account.redis.cache.windows.net:6380,password=key,ssl=True,abortConnect=False
 GET: value1
-<- End: REDIS GET mycache account.redis.cache.windows.net:6380,password=a44duMUReF5ll+F8YxPo0MGIz5P0Roq3ghUQGIYZpbc=,ssl=True,abortConnect=False
+<- End: REDIS GET mycache account.redis.cache.windows.net:6380,password=key,ssl=True,abortConnect=False
 <- End: HTTP POST http://localhost:5000/api/commands
 ```
 
