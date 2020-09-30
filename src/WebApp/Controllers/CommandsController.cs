@@ -164,13 +164,26 @@ namespace WebApp.Controllers
         private async Task<string> ExecuteNsLookUpAsync(string[] parameters)
         {
             var output = new StringBuilder();
-            var lookup = new LookupClient(new LookupClientOptions()
+            LookupClientOptions options;
+
+            if (parameters.Length > 1)
             {
-                UseCache = false
-            });
+                options = new LookupClientOptions(IPAddress.Parse(parameters[1]));
+            }
+            else
+            {
+                options = new LookupClientOptions();
+            }
+
+            options.UseCache = false;
+            options.Recursion = true;
+            options.EnableAuditTrail = true;
+
+            var lookup = new LookupClient(options);
 
             var query = await lookup.QueryAsync(parameters[0], QueryType.ANY);
             output.AppendLine($"NS: {query.NameServer.Address}");
+            output.AppendLine($"AUDIT: {query.AuditTrail}");
             foreach (var address in query.Answers)
             {
                 output.AppendLine($"RECORD: {address}");
