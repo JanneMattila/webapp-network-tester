@@ -54,7 +54,7 @@ namespace WebApp.Controllers
                     childRequest.Commands.AddRange(request.Commands.Skip(1));
 
                     var parameters = commands.Skip(1).ToArray();
-                    if (commands.Length > 2 &&
+                    if (commands.Length >= 2 &&
                         (commands[0] != "HTTP" ||
                         commands[1] != "POST"))
                     {
