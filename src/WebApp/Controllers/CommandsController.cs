@@ -109,7 +109,7 @@ namespace WebApp.Controllers
             {
                 return await response.Content.ReadAsStringAsync();
             }
-            return $"{response.StatusCode} {response.ReasonPhrase}{Environment.NewLine}";
+            return $"{response.StatusCode} {response.ReasonPhrase}";
         }
 
         private async Task<string> ExecuteBlobAsync(string[] parameters)
@@ -131,7 +131,7 @@ namespace WebApp.Controllers
                 await blobClient.DeleteIfExistsAsync();
                 using var stream = new MemoryStream(Encoding.UTF8.GetBytes(parameters[1]));
                 var blobResponse = await blobClient.UploadAsync(stream);
-                return $"Wrote {blobResponse.Value.ETag}{Environment.NewLine}";
+                return $"Wrote {blobResponse.Value.ETag}";
             }
         }
 
