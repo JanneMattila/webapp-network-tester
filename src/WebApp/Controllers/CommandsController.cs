@@ -1,7 +1,6 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using DnsClient;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
@@ -10,15 +9,11 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Mime;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
-using WebApp.Models;
 
 namespace WebApp.Controllers
 {
-    [Produces("application/json")]
     [ApiController]
     [Route("api/[controller]")]
     public class CommandsController : ControllerBase
@@ -31,16 +26,26 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        public async Task<ContentResult> Post(CommandRequest request)
+        public async Task<ContentResult> Post()
         {
+            using var reader = new StreamReader(this.Request.Body);
+            var requestContent = await reader.ReadToEndAsync();
+            if (string.IsNullOrEmpty(requestContent))
+            {
+                return Content("-");
+            }
+
             var output = new StringBuilder();
             var continueCommands = true;
+            var requestCommands = requestContent
+                .Replace("\r", "")
+                .Split("\n", StringSplitOptions.RemoveEmptyEntries)
+                .ToList();
 
             while (continueCommands)
             { 
                 continueCommands = false;
-                var input = request.Commands.FirstOrDefault();
+                var input = requestCommands.FirstOrDefault();
                 if (string.IsNullOrEmpty(input))
                 {
                     break;
@@ -50,8 +55,7 @@ namespace WebApp.Controllers
                 var commands = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 if (commands.Length > 0)
                 {
-                    var childRequest = new CommandRequest();
-                    childRequest.Commands.AddRange(request.Commands.Skip(1));
+                    var childRequest = string.Join(Environment.NewLine, requestCommands.Skip(1));
 
                     var parameters = commands.Skip(1).ToArray();
                     if (commands.Length >= 2 &&
@@ -74,7 +78,7 @@ namespace WebApp.Controllers
                         };
                         if (!string.IsNullOrEmpty(input))
                         {
-                            output.Append(childOutput);
+                            output.AppendLine(childOutput);
                         }
                     }
                     catch (Exception ex)
@@ -84,11 +88,11 @@ namespace WebApp.Controllers
                 }
                 output.AppendLine($"<- End: {input}");
 
-                request.Commands = request.Commands.Skip(1).ToList();
+                requestCommands = requestCommands.Skip(1).ToList();
             }
             return Content(output.ToString());
         }
-        private async Task<string> ExecuteHttpAsync(string[] parameters, CommandRequest request)
+        private async Task<string> ExecuteHttpAsync(string[] parameters, string request)
         {
             using var client = new HttpClient();
             HttpResponseMessage response;
@@ -98,8 +102,7 @@ namespace WebApp.Controllers
             }
             else
             {
-                var json = JsonSerializer.Serialize(request);
-                var content = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
+                var content = new StringContent(request);
                 response = await client.PostAsync(parameters[1], content);
             }
             if (response.IsSuccessStatusCode)
@@ -141,12 +144,12 @@ namespace WebApp.Controllers
             if (parameters[0] == "GET")
             {
                 var value = await db.StringGetAsync(parameters[1]);
-                return $"GET: {value}{Environment.NewLine}";
+                return $"GET: {value}";
             }
             else
             {
                 await db.StringSetAsync(parameters[2], parameters[1]);
-                return $"SET: {parameters[2]}={parameters[1]}{Environment.NewLine}";
+                return $"SET: {parameters[2]}={parameters[1]}";
             }
         }
 

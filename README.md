@@ -66,16 +66,12 @@ Gets ip address and relevant network related information of the `account.redis.c
 
 ### How to invoke api
 
-You simple create json payload and send it to the exposed api endpoint `/api/commands`:
+You simple create plain text payload with single command per line and send it to the exposed api endpoint `/api/commands`:
 
-```json
-{
-  "commands": [
-    "HTTP POST http://localhost:5000/api/commands",
-    "REDIS SET value1 mycache account.redis.cache.windows.net:6380,password=key,ssl=True,abortConnect=False",
-    "REDIS GET mycache account.redis.cache.windows.net:6380,password=key=,ssl=True,abortConnect=False"
-  ]
-}
+```plain
+HTTP POST http://localhost:5000/api/commands
+REDIS SET value1 mycache account.redis.cache.windows.net:6380,password=key,ssl=True,abortConnect=False
+REDIS GET mycache account.redis.cache.windows.net:6380,password=key=,ssl=True,abortConnect=False
 ```
 
 Here is example response:
