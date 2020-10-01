@@ -55,6 +55,10 @@ namespace WebApp
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseDefaultFiles();
+
+            app.UseStaticFiles();
+
             app.UseRouting();
 
             app.UseAuthorization();
