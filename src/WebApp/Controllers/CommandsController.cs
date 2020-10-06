@@ -2,9 +2,12 @@
 using Azure.Storage.Blobs.Models;
 using DnsClient;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using System;
+using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -37,10 +40,7 @@ namespace WebApp.Controllers
 
             var output = new StringBuilder();
             var continueCommands = true;
-            var requestCommands = requestContent
-                .Replace("\r", "")
-                .Split("\n", StringSplitOptions.RemoveEmptyEntries)
-                .ToList();
+            var requestCommands = ParseCommand(requestContent);
 
             while (continueCommands)
             { 
@@ -52,13 +52,13 @@ namespace WebApp.Controllers
                 }
 
                 output.AppendLine($"-> Start: {input}");
-                var commands = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                if (commands.Length > 0)
+                var commands = ParseSingleCommand(input);
+                if (commands.Count > 0)
                 {
                     var childRequest = string.Join(Environment.NewLine, requestCommands.Skip(1));
 
                     var parameters = commands.Skip(1).ToArray();
-                    if (commands.Length >= 2 &&
+                    if (commands.Count >= 2 &&
                         (commands[0] != "HTTP" ||
                         commands[1] != "POST"))
                     {
@@ -72,6 +72,7 @@ namespace WebApp.Controllers
                             "HTTP" => await ExecuteHttpAsync(parameters, childRequest),
                             "BLOB" => await ExecuteBlobAsync(parameters),
                             "REDIS" => await ExecuteRedisAsync(parameters),
+                            "SQL" => await ExecuteSQLAsync(parameters),
                             "IPLOOKUP" => await ExecuteIpLookUpAsync(parameters),
                             "NSLOOKUP" => await ExecuteNsLookUpAsync(parameters),
                             _ => string.Empty
@@ -92,6 +93,53 @@ namespace WebApp.Controllers
             }
             return Content(output.ToString());
         }
+
+        private List<string> ParseCommand(string requestContent)
+        {
+            return requestContent.Replace("\r", "")
+                .Split("\n", StringSplitOptions.RemoveEmptyEntries)
+                .ToList();
+        }
+
+        private List<string> ParseSingleCommand(string input)
+        {
+            const char separator = '\"';
+            const char space = ' ';
+            var parameters = new List<string>();
+            var parameter = string.Empty;
+            var insideString = false;
+            for (int i = 0; i < input.Length; i++)
+            {
+                var c = input[i];
+                switch (c)
+                {
+                    case separator:
+                        insideString = !insideString;
+                        break;
+                    case space:
+                        if (insideString)
+                        {
+                            parameter += c;
+                        }
+                        else
+                        {
+                            parameters.Add(parameter);
+                            parameter = string.Empty;
+                        }
+                        break;
+                    default:
+                        parameter += c;
+                        break;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(parameter))
+            {
+                parameters.Add(parameter);
+            }
+            return parameters;
+        }
+
         private async Task<string> ExecuteHttpAsync(string[] parameters, string request)
         {
             using var client = new HttpClient();
@@ -151,6 +199,35 @@ namespace WebApp.Controllers
                 await db.StringSetAsync(parameters[2], parameters[1]);
                 return $"SET: {parameters[2]}={parameters[1]}";
             }
+        }
+
+        private async Task<string> ExecuteSQLAsync(string[] parameters)
+        {
+            var output = new StringBuilder();
+            var param = parameters.Reverse().ToArray();
+            using var connection = new SqlConnection(param[0]);
+            await connection.OpenAsync();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = param[1];
+            using var reader = command.ExecuteReader();
+            var columns = reader.GetColumnSchema();
+            var columnNames = columns.Select(c => c.ColumnName);
+            output.AppendLine(string.Join(";", columnNames));
+
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    var values = columnNames.Select(c => reader.GetProviderSpecificValue(c));
+                    output.AppendLine(string.Join(";", values));
+                }
+            }
+            else
+            {
+                output.AppendLine("No rows found.");
+            }
+            return output.ToString();
         }
 
         private async Task<string> ExecuteIpLookUpAsync(string[] parameters)

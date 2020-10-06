@@ -28,6 +28,7 @@ It currently has support for following operations:
 | BLOB     | POST        | Uploads blob according to parameters defining file, container and storage account          |
 | REDIS    | GET         | Gets item from cache according to parameters defining key and redis cache                  |
 | REDIS    | SET         | Sets item from cache according to parameters defining key and redis cache                  |
+| SQL      | QUERY       | Executes SQL query according to parameters                                                 |
 | IPLOOKUP | N/A         | Gets IP address of defined in parameter                                                    |
 | NSLOOKUP | N/A         | Get IP address and relevant network related information about address defined in parameter |
 
@@ -51,6 +52,9 @@ Gets item called `mycache` from the cache using the defined connection string as
 
 `REDIS SET hello mycache account.redis.cache.windows.net:6380,password=key,ssl=True,abortConnect=False`:
 Sets value `hello` to the item called `mycache` from the cache using the defined connection string as last argument.
+
+`SQL QUERY "SELECT TOP (5) * FROM [SalesLT].[Customer]" "Server=tcp:server.database.windows.net,1433;Initial Catalog=db;Persist Security Info=False;User ID=user;Password=password;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"`:
+Executes defined T-SQL using the defined connection string as last argument.
 
 `IPLOOKUP account.redis.cache.windows.net`:
 Gets ip address of the `account.redis.cache.windows.net`.
