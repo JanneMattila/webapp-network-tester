@@ -109,46 +109,72 @@ After deployment you can test app with following request:
 POST https://*yourapp*.azurewebsites.net/api/commands HTTP/1.1
 ```
 
-Use simple test payload like this (you can test any domain):
+Use simple test payload like this:
+
 ```rest
-NSLOOKUP github.com
+HTTP GET http://localhost/
 ```
 
 You should get following reply:
 
-```rest
--> Start: NSLOOKUP github.com
-NS: 127.0.0.11
-AUDIT: ; (1 server found)
-;; Got answer:
-;; ->>HEADER<<- opcode: Query, status: No Error, id: 9582
-;; flags: qr rd ra; QUERY: 1, ANSWER: 2, AUTHORITY: 0, ADDITIONAL: 1
-
-;; OPT PSEUDOSECTION:
-; EDNS: version: 0, flags:; UDP: 1224; code: NoError
-;; QUESTION SECTION:
-github.com.                      	IN 	ANY
-
-;; ANSWER SECTION:
-github.com.                      	41 	IN 	A 	140.82.121.3
-github.com.                      	1800 	IN 	HINFO 	"RFC8482" ""
-
-;; Query time: 23 msec
-;; SERVER: 127.0.0.11#53
-;; WHEN: Tue Oct 06 18:05:04 Z 2020
-;; MSG SIZE  rcvd: 96
-
-RECORD: github.com. 41 IN A 140.82.121.3
-RECORD: github.com. 1800 IN HINFO "RFC8482" ""
-
-<- End: NSLOOKUP github.com
+```html
+<html><body>Hello there!</body></html>
 ```
 
 Now you are ready to test you configurations!
 
 ### App Service connecting to blob via service endpoint
 
-TBD
+Let's validate following architecture:
+
+![App Service connecting to blob via service endpoint](https://user-images.githubusercontent.com/2357647/95300102-60a58700-0887-11eb-9e68-05934ef8e160.png)
+
+You can use `IPLOOKUP` command for for fetching target resource IP:
+
+```bash
+IPLOOKUP account.blob.core.windows.net
+```
+
+=> (output abbreviated)
+
+```bash
+IP: 52.239.139.132
+```
+
+You can double check that IP address using [AzureDatacenterIPorNo](https://github.com/JanneMattila/AzureDatacenterIPOrNo):
+
+```powershell
+# Import or install if not installed earlier
+Import-Module AzureDatacenterIPorNo
+Get-AzureDatacenterIPOrNo -IP 52.239.139.132
+
+Source             Ip             IpRange Region
+------             --             ------- ------
+PublicIPs_20200504 52.239.139.132 IpRange europenorth
+```
+
+So clearly it's Azure public IP address from North Europe region.
+
+Next let's test that application can indeed use storage as intended:
+
+```bash
+BLOB POST hello file.csv files DefaultEndpointsProtocol=https;AccountName=account;AccountKey=key;EndpointSuffix=core.windows.net
+BLOB GET file.csv files DefaultEndpointsProtocol=https;AccountName=account;AccountKey=key;EndpointSuffix=core.windows.net
+```
+
+=> (output abbreviated)
+
+```bash
+Wrote "0x8D86A928E7D78FD"
+hello
+```
+
+We have now verified that application does have access to the blob storage as we wanted.
+It has created container `files` and uploaded and downloaded file called `file.csv` successfully.
+
+Now you should also validate that there is **no access**
+from e.g. Azure Portal or via Azure Storage Explorer for makin
+sure that your setup is correctly done.
 
 ### App Service connecting to redis cache via private endpoint
 
