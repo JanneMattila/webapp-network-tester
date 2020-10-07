@@ -173,7 +173,7 @@ We have now verified that application does have access to the blob storage as we
 It has created container `files` and uploaded and downloaded file called `file.csv` successfully.
 
 Now you should also validate that there is **no access**
-from e.g. Azure Portal or via Azure Storage Explorer for makin
+from e.g. Azure Portal or via Azure Storage Explorer for making
 sure that your setup is correctly done.
 
 ### App Service connecting to redis cache via private endpoint
