@@ -243,3 +243,87 @@ NSLOOKUP account.redis.cache.windows.net 168.63.129.16
 
 If that then works it would mean then you should check your
 [application settings](https://docs.microsoft.com/en-us/azure/app-service/web-sites-integrate-with-vnet#azure-dns-private-zones).
+
+### App Service front with app service backend and SQL database
+
+Here's high level architecture you might want to implement using app service:
+
+![High level architecture with app service and SQL database](https://user-images.githubusercontent.com/2357647/95335379-01ac3600-08b8-11eb-8256-4ee5a590cc1f.png)
+
+Above can be implemented using following architecture:
+
+![App Service front with app service backend via service endpoint and SQL database via private endpoint](https://user-images.githubusercontent.com/2357647/95495846-a4dc7880-09a8-11eb-9bb9-a192ee2a4fa7.png)
+
+Or using following architecture:
+
+![App Service front with app service backend via private endpoint and SQL database via private endpoint](https://user-images.githubusercontent.com/2357647/95495938-c8072800-09a8-11eb-91d5-18c1ea0b4296.png)
+
+**NOTE**: App services in same app service plan integrate into same subnet using
+regional VNet integration. This means that you can either 1) Create 2 separate
+app service plans *or* 2) setup filtering in network security group to just allow
+required connectivity between services. You can use outbound IPs of `front`
+app service for the filtering rules.
+
+We can analyze our network setup if we deploy the network test tool to both
+app services.
+
+You can start analyzing with `IPLOOKUP` command for checking if private IPs are returned for the database:
+
+```bash
+IPLOOKUP account.database.windows.net
+```
+
+=> (output abbreviated)
+
+```bash
+IP: 172.17.2.5
+```
+
+Now let's try to connect to the database directly from `front`:
+
+```bash
+SQL QUERY "SELECT TOP (5) * FROM [SalesLT].[Customer]" "Server=tcp:account.database.windows.net,1433;Initial Catalog=db;Persist Security Info=False;User ID=user;Password=password;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+```
+
+It tries to connect to the database but then after long timeout (~2 mins)
+it should fail like this (output abbreviated):
+
+```
+Microsoft.Data.SqlClient.SqlException (0x80131904): A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: TCP Provider, error: 40 - Could not open a connection to SQL Server)
+```
+
+Let's validate our `backend` IP address:
+
+```bash
+IPLOOKUP *yourbackendapp*.azurewebsites.net
+```
+
+=> (output abbreviated)
+
+```bash
+IP: 172.17.5.4
+```
+
+Instead of trying direct connection from `front`, let's pass that same request
+to the `backend` app:
+
+```bash
+HTTP POST https://*yourbackendapp*.azurewebsites.net/api/commands
+SQL QUERY "SELECT TOP (5) * FROM [SalesLT].[Customer]" "Server=tcp:account.database.windows.net,1433;Initial Catalog=db;Persist Security Info=False;User ID=user;Password=password;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+```
+
+=> (output abbreviated)
+
+```csv
+CustomerID;NameStyle;Title;FirstName
+1;False;Mr.;Orlando
+2;False;Mr.;Keith
+3;False;Ms.;Donna
+```
+
+This prooves that connectivity is working from the `backend` app service but
+you cannot directly connect from `front` to the database.
+
+## Links
+
+Excellent article about [multi-tier web applications](https://techcommunity.microsoft.com/t5/apps-on-azure/zero-to-hero-with-app-service-part-7-multi-tier-web-applications/ba-p/1752015).
