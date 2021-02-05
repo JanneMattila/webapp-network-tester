@@ -327,3 +327,5 @@ you cannot directly connect from `front` to the database.
 ## Links
 
 Excellent article about [multi-tier web applications](https://techcommunity.microsoft.com/t5/apps-on-azure/zero-to-hero-with-app-service-part-7-multi-tier-web-applications/ba-p/1752015).
+
+[Networking Related Commands for Azure App Services](https://techcommunity.microsoft.com/t5/apps-on-azure/networking-related-commands-for-azure-app-services/ba-p/392410)
