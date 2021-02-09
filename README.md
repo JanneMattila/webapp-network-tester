@@ -14,6 +14,30 @@ works as expected. This app is just for that!
 You can deploy this application using container to e.g. app service or
 AKS and then invoke it's exposed api to make different network operations.
 
+## How to create image locally
+
+```bash
+# Build container image
+docker build . -f src/WebApp/Dockerfile -t webapp-network-tester:latest
+
+# Run container using command
+docker run -it --rm -p "2001:80" webapp-network-tester:latest
+``` 
+
+If you want to publish your image to ACR ([instructions](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-docker-cli)):
+
+```bash
+$acrName = "<your ACR name>"
+# Login
+az acr login --name $acrName
+
+# Tag image
+docker tag webapp-network-tester "$acrName.azurecr.io/webapp-network-tester"
+
+# Push image
+docker push "$acrName.azurecr.io/webapp-network-tester"
+```
+
 ## Usage
 
 ### Supported operations
