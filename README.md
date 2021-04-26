@@ -1,7 +1,7 @@
 # Webapp for network testing
 
 [![Build Status](https://dev.azure.com/jannemattila/jannemattila/_apis/build/status/JanneMattila.webapp-network-tester?branchName=master&jobName=Build)](https://dev.azure.com/jannemattila/jannemattila/_build/latest?definitionId=55&branchName=master)
-![Docker Pulls](https://img.shields.io/docker/pulls/jannemattila/webapp-network-tester?style=plastic)
+[![Docker Pulls](https://img.shields.io/docker/pulls/jannemattila/webapp-network-tester?style=plastic)](https://hub.docker.com/r/jannemattila/webapp-network-tester)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 If you're building Azure infrastructure and plan to connect different
