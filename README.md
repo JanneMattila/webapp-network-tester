@@ -348,6 +348,65 @@ CustomerID;NameStyle;Title;FirstName
 This prooves that connectivity is working from the `backend` app service but
 you cannot directly connect from `front` to the database.
 
+
+### Multi-container App Service
+
+If you want to test App Service [multi-container](https://docs.microsoft.com/en-us/azure/app-service/tutorial-multi-container-app)
+setup, then create following `docker-compose.yml` and deploy that to app service:
+
+```yml
+version: '3.3'
+
+services:
+   db:
+     image: jannemattila/webapp-network-tester
+     restart: always
+   api:
+     image: jannemattila/webapp-network-tester
+     restart: always
+   web:
+     image: jannemattila/webapp-network-tester
+     ports:
+       - 80
+     restart: always
+```
+
+Above will create simple `web`, `api` and `db`
+containers for simulating 3-tier application.
+
+If you now want to see the IP address of the `api`:
+
+```bash
+IPLOOKUP api
+```
+
+=> (output abbreviated)
+
+```bash
+IP: 172.16.2.3
+```
+
+If you want to create chain of calls from `web` to
+`api` and from `api` to `db`, you can use following command
+for that:
+
+```bash
+POST https://*yourapp*.azurewebsites.net/api/commands HTTP/1.1
+
+HTTP POST http://api/api/commands
+HTTP GET http://db
+```
+
+=> (output abbreviated)
+
+```bash
+-> Start: HTTP POST http://api/api/commands
+-> Start: HTTP GET http://db
+<html><body>Hello there!</body></html>
+<- End: HTTP GET http://db
+<- End: HTTP POST http://api/api/commands
+```
+
 ## Links
 
 Excellent article about [multi-tier web applications](https://techcommunity.microsoft.com/t5/apps-on-azure/zero-to-hero-with-app-service-part-7-multi-tier-web-applications/ba-p/1752015).
