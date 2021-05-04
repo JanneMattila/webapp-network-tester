@@ -45,7 +45,7 @@ docker push "$acrName.azurecr.io/webapp-network-tester"
 It currently has support for following operations:
 
 | Command  | Sub-command | Description                                                                                |
-|----------|-------------|--------------------------------------------------------------------------------------------|
+| -------- | ----------- | ------------------------------------------------------------------------------------------ |
 | HTTP     | GET         | Invokes GET request to the parameter url                                                   |
 | HTTP     | POST        | Invokes POST request to the parameter url and passes further command to the target address |
 | BLOB     | GET         | Downloads blob according to parameters defining file, container and storage account        |
@@ -55,6 +55,8 @@ It currently has support for following operations:
 | SQL      | QUERY       | Executes SQL query according to parameters                                                 |
 | IPLOOKUP | N/A         | Gets IP address of defined in parameter                                                    |
 | NSLOOKUP | N/A         | Get IP address and relevant network related information about address defined in parameter |
+| INFO     | HOSTNAME    | Gets hostname of the container                                                             |
+| INFO     | ENV         | Gets all environment variables                                                             |
 
 ### Operation examples
 

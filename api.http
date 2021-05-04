@@ -45,3 +45,13 @@ NSLOOKUP account.database.windows.net
 POST {{endpoint}}/api/commands HTTP/1.1
 
 NSLOOKUP account.privatelink.redis.cache.windows.net 8.8.8.8
+
+### Execute commands
+POST {{endpoint}}/api/commands HTTP/1.1
+
+INFO HOSTNAME
+
+### Execute commands
+POST {{endpoint}}/api/commands HTTP/1.1
+
+INFO ENV

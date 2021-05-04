@@ -6,6 +6,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -75,6 +76,7 @@ namespace WebApp.Controllers
                             "SQL" => await ExecuteSQLAsync(parameters),
                             "IPLOOKUP" => await ExecuteIpLookUpAsync(parameters),
                             "NSLOOKUP" => await ExecuteNsLookUpAsync(parameters),
+                            "INFO" => ExecuteInfo(parameters),
                             _ => string.Empty
                         };
                         if (!string.IsNullOrEmpty(input))
@@ -269,6 +271,23 @@ namespace WebApp.Controllers
                 output.AppendLine($"RECORD: {address}");
             }
             return output.ToString();
+        }
+
+        private string ExecuteInfo(string[] parameters)
+        {
+            if (parameters[0] == "HOSTNAME")
+            {
+                return $"HOSTNAME: {Environment.MachineName}";
+            }
+            else
+            {
+                var output = new StringBuilder();
+                foreach (DictionaryEntry env in Environment.GetEnvironmentVariables())
+                {
+                    output.AppendLine($"ENV: {env.Key}: {env.Value}");
+                }
+                return output.ToString();
+            }
         }
     }
 }
