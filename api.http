@@ -55,3 +55,8 @@ INFO HOSTNAME
 POST {{endpoint}}/api/commands HTTP/1.1
 
 INFO ENV
+
+### Execute commands
+POST {{endpoint}}/api/commands HTTP/1.1
+
+INFO ENV COMPUTERNAME

@@ -281,12 +281,19 @@ namespace WebApp.Controllers
             }
             else
             {
-                var output = new StringBuilder();
-                foreach (DictionaryEntry env in Environment.GetEnvironmentVariables())
+                if (parameters.Length > 1)
                 {
-                    output.AppendLine($"ENV: {env.Key}: {env.Value}");
+                    return $"ENV: {parameters[1]}: {Environment.GetEnvironmentVariable(parameters[1])}";
                 }
-                return output.ToString();
+                else
+                {
+                    var output = new StringBuilder();
+                    foreach (DictionaryEntry env in Environment.GetEnvironmentVariables())
+                    {
+                        output.AppendLine($"ENV: {env.Key}: {env.Value}");
+                    }
+                    return output.ToString();
+                }
             }
         }
     }

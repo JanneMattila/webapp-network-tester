@@ -56,7 +56,7 @@ It currently has support for following operations:
 | IPLOOKUP | N/A         | Gets IP address of defined in parameter                                                    |
 | NSLOOKUP | N/A         | Get IP address and relevant network related information about address defined in parameter |
 | INFO     | HOSTNAME    | Gets hostname of the container                                                             |
-| INFO     | ENV         | Gets all environment variables                                                             |
+| INFO     | ENV         | Gets single or all environment variables                                                   |
 
 ### Operation examples
 
@@ -360,16 +360,20 @@ setup, then create following `docker-compose.yml` and deploy that to app service
 version: '3.3'
 
 services:
-   db:
+   web:
      image: jannemattila/webapp-network-tester
+     environment: 
+      - APP_LAYER=web
      restart: always
    api:
      image: jannemattila/webapp-network-tester
+     environment: 
+      - APP_LAYER=api
      restart: always
-   web:
+   db:
      image: jannemattila/webapp-network-tester
-     ports:
-       - 80
+     environment: 
+      - APP_LAYER=db
      restart: always
 ```
 
@@ -396,7 +400,8 @@ for that:
 POST https://*yourapp*.azurewebsites.net/api/commands HTTP/1.1
 
 HTTP POST http://api/api/commands
-HTTP GET http://db
+HTTP POST http://db/api/commands
+INFO ENV APP_LAYER
 ```
 
 => (output abbreviated)
