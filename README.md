@@ -408,9 +408,11 @@ INFO ENV APP_LAYER
 
 ```bash
 -> Start: HTTP POST http://api/api/commands
--> Start: HTTP GET http://db
-<html><body>Hello there!</body></html>
-<- End: HTTP GET http://db
+-> Start: HTTP POST http://db/api/commands
+-> Start: INFO ENV APP_LAYER
+ENV: APP_LAYER: db
+<- End: INFO ENV APP_LAYER
+<- End: HTTP POST http://db/api/commands
 <- End: HTTP POST http://api/api/commands
 ```
 
