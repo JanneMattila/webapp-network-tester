@@ -459,7 +459,15 @@ HTTP GET http://172.16.0.3:8081/msi/token?api-version=2019-08-01&resource=https:
 
 Read more about acquiring token inside [app service](https://docs.microsoft.com/en-us/azure/app-service/overview-managed-identity).
 
-Here is example token from the endpoints:
+#### Azure Kubernetes Service (AKS)
+
+```bash
+HTTP GET "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2021-02-01&object_id=4f5134e0-ef0f-4402-92de-585290a2284c&resource=https://management.azure.com/" "Metadata=true"
+```
+
+Note: There is additional `object_id` in the request for defining the identity to use. Read this important [comment](https://github.com/Azure/AKS/issues/1410#issuecomment-581208622) about it.
+
+#### Example token output
 
 ```json
 {
