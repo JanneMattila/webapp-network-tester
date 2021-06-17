@@ -145,6 +145,18 @@ namespace WebApp.Controllers
         private async Task<string> ExecuteHttpAsync(string[] parameters, string request)
         {
             using var client = new HttpClient();
+
+            // Process headers
+            if (parameters.Length > 2)
+            {
+                var headers = parameters[2].Split('|', StringSplitOptions.RemoveEmptyEntries);
+                foreach (var header in headers)
+                {
+                    var data = header.Split('=');
+                    client.DefaultRequestHeaders.Add(data[0], data[1]);
+                }
+            }
+         
             HttpResponseMessage response;
             if (parameters[0] == "GET")
             {

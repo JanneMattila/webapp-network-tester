@@ -67,6 +67,10 @@ Here are few example commands:
 `HTTP POST https://target/api/commands`: Invokes POST request to target address **AND**
 passes along rest of the commands for further processing.
 
+Note: Both `HTTP GET` and `HTTP POST` support sending HTTP Headers as third parameter. Here's example about that:
+
+`HTTP POST "https://echo.contoso.com/api/echo" "CustomHeader1=Value1|CustomHeader2=Value2"`
+
 `BLOB GET file.csv files DefaultEndpointsProtocol=https;AccountName=account;AccountKey=key;EndpointSuffix=core.windows.net`: Downloads
 `file.csv` from container `files` using the defined connection string as last argument.
 
@@ -349,7 +353,6 @@ CustomerID;NameStyle;Title;FirstName
 
 This prooves that connectivity is working from the `backend` app service but
 you cannot directly connect from `front` to the database.
-
 
 ### Multi-container App Service
 
