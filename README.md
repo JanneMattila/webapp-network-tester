@@ -465,7 +465,7 @@ Read more about acquiring token inside [app service](https://docs.microsoft.com/
 HTTP GET "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2021-02-01&object_id=4f5134e0-ef0f-4402-92de-585290a2284c&resource=https://management.azure.com/" "Metadata=true"
 ```
 
-Note: There is additional `object_id` in the request for defining the identity to use. Read this important [comment](https://github.com/Azure/AKS/issues/1410#issuecomment-581208622) about it.
+Note: There is additional [object_id](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/how-to-use-vm-token#get-a-token-using-http) in the request for defining the identity to use. Read this important [comment](https://github.com/Azure/AKS/issues/1410#issuecomment-581208622) about it as well.
 
 #### Example token output
 
