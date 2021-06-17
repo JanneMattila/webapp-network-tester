@@ -171,7 +171,19 @@ namespace WebApp.Controllers
             {
                 return await response.Content.ReadAsStringAsync();
             }
-            return $"{response.StatusCode} {response.ReasonPhrase}";
+            else
+            {
+                var content = string.Empty;
+                try
+                {
+                    content = await response.Content.ReadAsStringAsync();
+                }
+                catch (Exception)
+                {
+                    // Getting error content is optional.
+                }
+                return $"{response.StatusCode} {response.ReasonPhrase} {content}";
+            }
         }
 
         private async Task<string> ExecuteBlobAsync(string[] parameters)
