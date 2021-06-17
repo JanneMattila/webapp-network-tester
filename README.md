@@ -419,6 +419,58 @@ ENV: APP_LAYER: db
 <- End: HTTP POST http://api/api/commands
 ```
 
+### Managed Identities
+
+You can use this tool for testing [managed identities](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).
+Enable managed identity at the [Azure Service](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/services-support-managed-identities)
+that you plan to host your app and then test the setup with below commands.
+
+#### Virtual Machines
+
+```bash
+HTTP GET "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2021-02-01&resource=https://management.azure.com/" "Metadata=true"
+```
+
+Read more about the acquiring token inside [virtual machines](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/how-to-use-vm-token#get-a-token-using-http).
+
+You can also use this to access [Azure Instance Metadata Service](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/instance-metadata-service).
+
+#### App Services
+
+For App Services you first need to obtain these two environment variable values:
+
+```bash
+INFO ENV IDENTITY_ENDPOINT
+INFO ENV IDENTITY_HEADER
+```
+
+=> (output abbreviated)
+
+```bash
+ENV: IDENTITY_ENDPOINT: http://172.16.0.3:8081/msi/token
+ENV: IDENTITY_HEADER: ef98d788-3bb3-4572-bb79-47e2aa1090f9
+```
+
+Then you can use them to obtain the token:
+
+```bash
+HTTP GET http://172.16.0.3:8081/msi/token?api-version=2019-08-01&resource=https://management.azure.com/ "X-IDENTITY-HEADER=ef98d788-3bb3-4572-bb79-47e2aa1090f9"
+```
+
+Read more about acquiring token inside [app service](https://docs.microsoft.com/en-us/azure/app-service/overview-managed-identity).
+
+Here is example token from the endpoints:
+
+```json
+{
+  "access_token":"eyJ0...EV0w",
+  "expires_on":"1624011075",
+  "resource":"https://management.azure.com/",
+  "token_type":"Bearer",
+  "client_id":"d3465d27-4178-477e-85d5-c75259776d8d"
+}
+```
+
 ## Links
 
 Excellent article about [multi-tier web applications](https://techcommunity.microsoft.com/t5/apps-on-azure/zero-to-hero-with-app-service-part-7-multi-tier-web-applications/ba-p/1752015).
