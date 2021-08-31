@@ -60,3 +60,8 @@ INFO ENV
 POST {{endpoint}}/api/commands HTTP/1.1
 
 INFO ENV COMPUTERNAME
+
+### Execute commands
+POST {{endpoint}}/api/commands HTTP/1.1
+
+HTTP GET https://api.ipify.org/

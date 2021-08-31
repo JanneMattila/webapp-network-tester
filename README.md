@@ -419,6 +419,27 @@ ENV: APP_LAYER: db
 <- End: HTTP POST http://api/api/commands
 ```
 
+### Outbound network traffic
+
+You can use e.g., `api.ipify.org` for testing your outbound IP address:
+
+```bash
+POST https://*yourapp*.azurewebsites.net/api/commands HTTP/1.1
+
+HTTP GET https://api.ipify.org/
+```
+
+=> (output abbreviated)
+
+```bash
+-> Start: HTTP GET https://api.ipify.org/
+20.76.118.228
+<- End: HTTP GET https://api.ipify.org/
+```
+
+This comes especially handy test, if you plan to deploy [NAT Gateway](https://docs.microsoft.com/en-us/azure/virtual-network/nat-gateway/nat-overview)
+in order to get static IP address for outbound network traffic.
+
 ### Managed Identities
 
 You can use this tool for testing [managed identities](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).
