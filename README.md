@@ -38,6 +38,43 @@ docker tag webapp-network-tester "$acrName.azurecr.io/webapp-network-tester"
 docker push "$acrName.azurecr.io/webapp-network-tester"
 ```
 
+## How to deploy to Azure App Service
+
+Here's PowerShell example, how you can deploy Azure App Service
+using image directly from [Docker Hub](https://hub.docker.com/r/jannemattila/webapp-network-tester):
+
+```powershell
+$appServiceName="networktester000001"
+$appServicePlanName="ntPlan"
+$resourceGroup="network-tester-rg"
+$location="westeurope"
+$image="jannemattila/webapp-network-tester"
+
+# Login to Azure
+az login
+
+# List subscriptions
+az account list -o table
+
+# *Explicitly* select your working context
+az account set --subscription <SubscriptionName>
+
+# Show current context
+az account show -o table
+
+# Create new resource group
+az group create --name $resourceGroup --location $location -o table
+
+# Create App Service Plan
+az appservice plan create --name $appServicePlanName --resource-group $resourceGroup --is-linux --number-of-workers 1 --sku P1V2 -o table
+
+# Create App Service
+az webapp create --name $appServiceName --plan $appServicePlanName --resource-group $resourceGroup -i $image -o table
+
+# Wipe out the resources
+az group delete --name $resourceGroup -y
+```
+
 ## Usage
 
 ### Supported operations
