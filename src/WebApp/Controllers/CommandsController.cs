@@ -10,6 +10,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -51,6 +52,7 @@ public class CommandsController : ControllerBase
     [HttpPost]
     public async Task<ContentResult> Post([FromBody] string body)
     {
+        var time = Stopwatch.StartNew();
         if (string.IsNullOrEmpty(body))
         {
             return Content("-");
@@ -106,7 +108,7 @@ public class CommandsController : ControllerBase
                     output.AppendLine(ex.ToString());
                 }
             }
-            output.AppendLine($"<- End: {input}");
+            output.AppendLine($"<- End: {input} {time.ElapsedMilliseconds}ms");
 
             requestCommands = requestCommands.Skip(1).ToList();
         }
