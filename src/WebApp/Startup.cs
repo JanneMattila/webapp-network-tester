@@ -23,11 +23,9 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddHttpClient();
-        services.AddControllers();
-
-        services.AddMvc(options =>
+        services.AddControllers(options =>
         {
-            options.InputFormatters.Add(new TextPlainInputFormatter());
+            options.InputFormatters.Insert(0, new TextPlainInputFormatter());
         });
 
         services.AddSwaggerGen(c =>
