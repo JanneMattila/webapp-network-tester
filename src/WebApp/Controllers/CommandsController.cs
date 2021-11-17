@@ -108,7 +108,7 @@ public class CommandsController : ControllerBase
                     output.AppendLine(ex.ToString());
                 }
             }
-            output.AppendLine($"<- End: {input} {time.ElapsedMilliseconds}ms");
+            output.AppendLine($"<- End: {input} {time.Elapsed.TotalMilliseconds:F}ms");
 
             requestCommands = requestCommands.Skip(1).ToList();
         }
