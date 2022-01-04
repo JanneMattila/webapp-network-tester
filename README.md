@@ -14,6 +14,10 @@ works as expected. This app is just for that!
 You can deploy this application using container to e.g. app service or
 AKS and then invoke it's exposed api to make different network operations.
 
+See example end-to-end scenario [Azure Firewall Demo](https://github.com/JanneMattila/azure-firewall-demo)
+for more details. Webapp for network testing is used 
+in that implementation for testing various firewall rules.
+
 ## How to create image locally
 
 ```bash
