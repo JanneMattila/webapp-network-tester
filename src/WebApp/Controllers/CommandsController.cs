@@ -15,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -90,6 +91,7 @@ public class CommandsController : ControllerBase
                     var childOutput = commands[0] switch
                     {
                         "HTTP" => await ExecuteHttpAsync(parameters, childRequest),
+                        "TCP" => await ExecuteTcpAsync(parameters),
                         "BLOB" => await ExecuteBlobAsync(parameters),
                         "REDIS" => await ExecuteRedisAsync(parameters),
                         "SQL" => await ExecuteSQLAsync(parameters),
@@ -202,6 +204,21 @@ public class CommandsController : ControllerBase
                 // Getting error content is optional.
             }
             return $"{response.StatusCode} {response.ReasonPhrase} {content}";
+        }
+    }
+
+    private async Task<string> ExecuteTcpAsync(string[] parameters)
+    {
+        using var client = new TcpClient();
+        try
+        {
+            await client.ConnectAsync(parameters[0], Convert.ToInt32(parameters[1]));
+            client.Close();
+            return "OK";
+        }
+        catch (Exception ex)
+        {
+            return ex.Message;
         }
     }
 

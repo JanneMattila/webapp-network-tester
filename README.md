@@ -89,6 +89,7 @@ It currently has support for following operations:
 | -------- | ----------- | ------------------------------------------------------------------------------------------ |
 | HTTP     | GET         | Invokes GET request to the parameter url                                                   |
 | HTTP     | POST        | Invokes POST request to the parameter url and passes further command to the target address |
+| TCP      | N/A         | Connects to target host and port according to parameters                                   |
 | BLOB     | GET         | Downloads blob according to parameters defining file, container and storage account        |
 | BLOB     | POST        | Uploads blob according to parameters defining file, container and storage account          |
 | REDIS    | GET         | Gets item from cache according to parameters defining key and redis cache                  |
@@ -111,6 +112,8 @@ passes along rest of the commands for further processing.
 Note: Both `HTTP GET` and `HTTP POST` support sending HTTP Headers as third parameter. Here's example about that:
 
 `HTTP POST "https://echo.contoso.com/api/echo" "CustomHeader1=Value1|CustomHeader2=Value2"`
+
+`TCP localhost 44328` connects to `localhost` to port `44328` and returns `OK` if success and otherwise error message returned.
 
 `BLOB GET file.csv files DefaultEndpointsProtocol=https;AccountName=account;AccountKey=key;EndpointSuffix=core.windows.net`: Downloads
 `file.csv` from container `files` using the defined connection string as last argument.
