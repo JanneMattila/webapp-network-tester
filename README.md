@@ -85,21 +85,23 @@ az group delete --name $resourceGroup -y
 
 It currently has support for following operations:
 
-| Command  | Sub-command | Description                                                                                |
-| -------- | ----------- | ------------------------------------------------------------------------------------------ |
-| HTTP     | GET         | Invokes GET request to the parameter url                                                   |
-| HTTP     | POST        | Invokes POST request to the parameter url and passes further command to the target address |
-| TCP      | N/A         | Connects to target host and port according to parameters                                   |
-| BLOB     | GET         | Downloads blob according to parameters defining file, container and storage account        |
-| BLOB     | POST        | Uploads blob according to parameters defining file, container and storage account          |
-| REDIS    | GET         | Gets item from cache according to parameters defining key and redis cache                  |
-| REDIS    | SET         | Sets item from cache according to parameters defining key and redis cache                  |
-| SQL      | QUERY       | Executes SQL query according to parameters                                                 |
-| IPLOOKUP | N/A         | Gets IP address of defined in parameter                                                    |
-| NSLOOKUP | N/A         | Get IP address and relevant network related information about address defined in parameter |
-| INFO     | HOSTNAME    | Gets hostname of the container                                                             |
-| INFO     | ENV         | Gets single or all environment variables                                                   |
-| HEADER   | NAME        | Gets single or all HTTP headers                                                            |
+| Command    | Sub-command | Description                                                                                |
+| ---------- | ----------- | ------------------------------------------------------------------------------------------ |
+| HTTP       | GET         | Invokes GET request to the parameter url                                                   |
+| HTTP       | POST        | Invokes POST request to the parameter url and passes further command to the target address |
+| TCP        | N/A         | Connects to target host and port according to parameters                                   |
+| BLOB       | GET         | Downloads blob according to parameters defining file, container and storage account        |
+| BLOB       | POST        | Uploads blob according to parameters defining file, container and storage account          |
+| REDIS      | GET         | Gets item from cache according to parameters defining key and redis cache                  |
+| REDIS      | SET         | Sets item from cache according to parameters defining key and redis cache                  |
+| SQL        | QUERY       | Executes SQL query according to parameters                                                 |
+| IPLOOKUP   | N/A         | Gets IP address of defined in parameter                                                    |
+| NSLOOKUP   | N/A         | Get IP address and relevant network related information about address defined in parameter |
+| INFO       | HOSTNAME    | Gets hostname of the container                                                             |
+| INFO       | ENV         | Gets single or all environment variables                                                   |
+| HEADER     | NAME        | Gets single or all HTTP headers                                                            |
+| CONNECTION | IP          | Gets remote address IP                                                                     |
+| CONNECTION | N/A         | Gets remote connection information                                                         |
 
 ### Operation examples
 

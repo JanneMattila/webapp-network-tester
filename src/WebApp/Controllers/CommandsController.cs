@@ -99,6 +99,7 @@ public class CommandsController : ControllerBase
                         "NSLOOKUP" => await ExecuteNsLookUpAsync(parameters),
                         "INFO" => ExecuteInfo(parameters),
                         "HEADER" => ExecuteHeader(parameters),
+                        "CONNECTION" => ExecuteConnection(parameters),
                         _ => string.Empty
                     };
                     if (!string.IsNullOrEmpty(input))
@@ -373,5 +374,14 @@ public class CommandsController : ControllerBase
             }
             return output.ToString();
         }
+    }
+
+    private string ExecuteConnection(string[] parameters)
+    {
+        if (parameters.Length > 0 && parameters[0] == "IP")
+        {
+            return $"IP: {Request.HttpContext.Connection.RemoteIpAddress}";
+        }
+        return $"CONNECTION: {Request.HttpContext.Connection.RemoteIpAddress}:{Request.HttpContext.Connection.RemotePort}";
     }
 }
