@@ -99,6 +99,7 @@ It currently has support for following operations:
 | NSLOOKUP | N/A         | Get IP address and relevant network related information about address defined in parameter |
 | INFO     | HOSTNAME    | Gets hostname of the container                                                             |
 | INFO     | ENV         | Gets single or all environment variables                                                   |
+| HEADER   | NAME        | Gets single or all HTTP headers                                                            |
 
 ### Operation examples
 

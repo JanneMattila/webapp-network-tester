@@ -46,7 +46,7 @@ public class CommandsController : ControllerBase
     /// <param name="body">Network test operation request</param>
     /// <returns>Network test operation results</returns>
     /// <response code="200">Returns network test operation results</response>
-    /// <response code="500">If errors occur</response>  
+    /// <response code="500">If errors occur</response>
     [Consumes("text/plain")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK, "plain/text")]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -98,6 +98,7 @@ public class CommandsController : ControllerBase
                         "IPLOOKUP" => await ExecuteIpLookUpAsync(parameters),
                         "NSLOOKUP" => await ExecuteNsLookUpAsync(parameters),
                         "INFO" => ExecuteInfo(parameters),
+                        "HEADER" => ExecuteHeader(parameters),
                         _ => string.Empty
                     };
                     if (!string.IsNullOrEmpty(input))
@@ -354,6 +355,23 @@ public class CommandsController : ControllerBase
                 }
                 return output.ToString();
             }
+        }
+    }
+
+    private string ExecuteHeader(string[] parameters)
+    {
+        if (parameters.Length > 1)
+        {
+            return $"HEADER: {parameters[1]}: {Request.Headers.FirstOrDefault(h => h.Key == parameters[1])}";
+        }
+        else
+        {
+            var output = new StringBuilder();
+            foreach (var header in Request.Headers)
+            {
+                output.AppendLine($"HEADER: {header.Key}: {header.Value}");
+            }
+            return output.ToString();
         }
     }
 }
