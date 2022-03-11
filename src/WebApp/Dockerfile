@@ -9,6 +9,7 @@ EXPOSE 443
 EXPOSE 5201/tcp 5201/udp
 
 RUN apk add --no-cache iperf3
+RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ qperf==0.4.11-r0
 RUN apk add --no-cache icu-libs
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
