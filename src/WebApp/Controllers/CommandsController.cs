@@ -21,6 +21,9 @@ using System.Threading.Tasks;
 
 namespace WebApp.Controllers;
 
+/// <summary>
+/// Entrypoint for executing remote commands
+/// </summary>
 [Produces("plain/text")]
 [ApiController]
 [Route("api/[controller]")]
