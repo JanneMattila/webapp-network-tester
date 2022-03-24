@@ -56,6 +56,8 @@ public class CommandsController : ControllerBase
     [HttpPost]
     public async Task<ContentResult> Post([FromBody] string body)
     {
+        _logger.LogInformation("Processing request with body '{Body}'", body);
+
         var time = Stopwatch.StartNew();
         if (string.IsNullOrEmpty(body))
         {
