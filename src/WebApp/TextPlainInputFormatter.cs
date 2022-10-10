@@ -15,6 +15,16 @@ public class TextPlainInputFormatter : TextInputFormatter
         SupportedEncodings.Add(UTF16EncodingLittleEndian);
     }
 
+    public override bool CanRead(InputFormatterContext context)
+    {
+        if (string.IsNullOrEmpty(context.HttpContext.Request.ContentType))
+        {
+            // Default to this formatter if no content type was specified.
+            return CanReadType(context.ModelType);
+        }
+        return base.CanRead(context);
+    }
+
     protected override bool CanReadType(Type type)
     {
         return type == typeof(string);

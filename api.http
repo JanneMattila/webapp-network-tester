@@ -2,26 +2,22 @@
 
 ### Execute commands
 POST {{endpoint}}/api/commands HTTP/1.1
-Content-Type: text/plain
 
 HTTP GET http://localhost:5000/
 NSLOOKUP bing.com
 
 ### Execute commands
 POST {{endpoint}}/api/commands HTTP/1.1
-Content-Type: text/plain
 
 IPLOOKUP bing.com
 
 ### Execute commands
 POST {{endpoint}}/api/commands HTTP/1.1
-Content-Type: text/plain
 
 NSLOOKUP bing.com 8.8.8.8
 
 ### Execute commands
 POST {{endpoint}}/api/commands HTTP/1.1
-Content-Type: text/plain
 
 HTTP POST http://localhost:5000/api/commands
 BLOB GET data.csv files DefaultEndpointsProtocol=https;AccountName=demoaccount;AccountKey=key;EndpointSuffix=core.windows.net
@@ -29,7 +25,6 @@ BLOB POST hello data2.csv files DefaultEndpointsProtocol=https;AccountName=demoa
 
 ### Execute commands
 POST {{endpoint}}/api/commands HTTP/1.1
-Content-Type: text/plain
 
 HTTP POST http://localhost:5000/api/commands
 REDIS SET hello mycache account.redis.cache.windows.net:6380,password=key,ssl=True,abortConnect=False
@@ -37,49 +32,41 @@ REDIS GET mycache account.redis.cache.windows.net:6380,password=key,ssl=True,abo
 
 ### Execute commands
 POST {{endpoint}}/api/commands HTTP/1.1
-Content-Type: text/plain
 
 HTTP POST http://localhost:5000/api/commands
 SQL QUERY "SELECT TOP (5) * FROM [SalesLT].[Customer]" "Server=tcp:account.database.windows.net,1433;Initial Catalog=db;Persist Security Info=False;User ID=user;Password=password;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
 
 ### Execute commands
 POST {{endpoint}}/api/commands HTTP/1.1
-Content-Type: text/plain
 
 NSLOOKUP account.database.windows.net
 
 ### Execute commands
 POST {{endpoint}}/api/commands HTTP/1.1
-Content-Type: text/plain
 
 NSLOOKUP account.privatelink.redis.cache.windows.net 8.8.8.8
 
 ### Execute commands
 POST {{endpoint}}/api/commands HTTP/1.1
-Content-Type: text/plain
 
 INFO HOSTNAME
 
 ### Execute commands
 POST {{endpoint}}/api/commands HTTP/1.1
-Content-Type: text/plain
 
 INFO ENV
 
 ### Execute commands
 POST {{endpoint}}/api/commands HTTP/1.1
-Content-Type: text/plain
 
 INFO ENV COMPUTERNAME
 
 ### Execute commands
 POST {{endpoint}}/api/commands HTTP/1.1
-Content-Type: text/plain
 
 HTTP GET https://api.ipify.org/
 
 ### Execute commands
 POST {{endpoint}}/api/commands HTTP/1.1
-Content-Type: text/plain
 
 TCP api.ipify.org 80
