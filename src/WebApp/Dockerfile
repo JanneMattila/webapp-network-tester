@@ -1,6 +1,6 @@
 # Build image(https://hub.docker.com/_/microsoft-dotnet-core-sdk/)
 #FROM mcr.microsoft.com/dotnet/sdk:6.0.201-alpine3.15-amd64 AS build
-FROM mcr.microsoft.com/dotnet/sdk:6.0.201-bullseye-slim-amd64 AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0.401-bullseye-slim-amd64 AS build
 
 # Install to build containers
 # - gcc and libs
@@ -48,7 +48,7 @@ RUN dotnet publish "WebApp.csproj" -c Release -o /app/publish
 
 # Release image
 #FROM mcr.microsoft.com/dotnet/aspnet:6.0.3-alpine3.15-amd64 as final
-FROM mcr.microsoft.com/dotnet/aspnet:6.0.3-bullseye-slim-amd64 as final
+FROM mcr.microsoft.com/dotnet/aspnet:6.0.9-bullseye-slim-amd64 as final
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
 EXPOSE 80
@@ -67,7 +67,7 @@ EXPOSE 19765/tcp
     #apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ qperf==0.4.11-r0 && \
     #apk add --no-cache icu-libs
 RUN apt-get update && \
-    apt-get install -y iperf3 qperf
+    apt-get install -y iperf3 qperf hping3
 WORKDIR /app
 
 # Copy content from Build image
