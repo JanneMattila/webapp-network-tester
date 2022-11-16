@@ -25,8 +25,8 @@ namespace WebApp.Controllers;
 /// Entrypoint for executing remote commands
 /// </summary>
 [Produces("plain/text")]
-[ApiController]
 [Route("api/[controller]")]
+[ApiController]
 public class CommandsController : ControllerBase
 {
     private readonly ILogger<CommandsController> _logger;
@@ -50,7 +50,7 @@ public class CommandsController : ControllerBase
     /// <returns>Network test operation results</returns>
     /// <response code="200">Returns network test operation results</response>
     /// <response code="500">If errors occur</response>
-    [Consumes("text/plain")]
+    [Consumes("text/plain", "application/x-www-form-urlencoded", "application/json")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK, "plain/text")]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [HttpPost]

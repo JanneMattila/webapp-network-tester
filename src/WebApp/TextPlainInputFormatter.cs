@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Formatters;
 using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,7 +11,11 @@ public class TextPlainInputFormatter : TextInputFormatter
 {
     public TextPlainInputFormatter()
     {
+        // Accept really anything and read directly from body
         SupportedMediaTypes.Add("text/plain");
+        SupportedMediaTypes.Add("application/x-www-form-urlencoded");
+        SupportedMediaTypes.Add("application/json");
+
         SupportedEncodings.Add(UTF8EncodingWithoutBOM);
         SupportedEncodings.Add(UTF16EncodingLittleEndian);
     }
@@ -33,10 +38,16 @@ public class TextPlainInputFormatter : TextInputFormatter
     public override async Task<InputFormatterResult> ReadRequestBodyAsync(InputFormatterContext context, Encoding encoding)
     {
         string data = null;
-        using (var streamReader = context.ReaderFactory(context.HttpContext.Request.Body, encoding))
+        if (context.HttpContext.Request.HasFormContentType && context.HttpContext.Request.Form.Any())
         {
+            data = context.HttpContext.Request.Form.First().Key;
+        }
+        else
+        {
+            using var streamReader = context.ReaderFactory(context.HttpContext.Request.Body, encoding);
             data = await streamReader.ReadToEndAsync();
         }
+
         return InputFormatterResult.Success(data);
     }
 }
