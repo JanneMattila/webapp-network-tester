@@ -44,7 +44,7 @@ It currently has support for following operations:
 | CONNECTION | IP          | Gets remote address IP                                                                     |
 | CONNECTION | N/A         | Gets remote connection information                                                         |
 
-### Operation examples
+### How to invoke api
 
 You can use `curl` to invoke the api. For example, to invoke `HTTP GET` request to `https://github.com`:
 
@@ -57,6 +57,28 @@ Alternative, you can use swagger endpoint to invoke the api directly in browser:
 ```
 https://localhost:44328/swagger/index.html
 ```
+
+You simple create plain text payload with single command per line and send it to the exposed api endpoint `/api/commands`:
+
+```plain
+REDIS SET value1 mycache account.redis.cache.windows.net:6380,password=key,ssl=True,abortConnect=False
+REDIS GET mycache account.redis.cache.windows.net:6380,password=key=,ssl=True,abortConnect=False
+```
+
+Here is example response:
+
+```plain
+-> Start: HTTP POST http://localhost:5000/api/commands
+-> Start: REDIS SET hello2 mycache account.redis.cache.windows.net:6380,password=key,ssl=True,abortConnect=False
+SET: mycache=value1
+<- End: REDIS SET hello2 mycache account.redis.cache.windows.net:6380,password=key,ssl=True,abortConnect=False
+-> Start: REDIS GET mycache account.redis.cache.windows.net:6380,password=key,ssl=True,abortConnect=False
+GET: value1
+<- End: REDIS GET mycache account.redis.cache.windows.net:6380,password=key,ssl=True,abortConnect=False
+<- End: HTTP POST http://localhost:5000/api/commands
+```
+
+### Operation examples
 
 Here are few example command payloads:
 
@@ -97,29 +119,6 @@ Gets ip address and relevant network related information of the `account.redis.c
 
 `NSLOOKUP account.redis.cache.windows.net 1.1.1.1`:
 Gets ip address and relevant network related information of the `account.redis.cache.windows.net` using `1.1.1.1` (Cloudflare DNS) as name server.
-
-### How to invoke api
-
-You simple create plain text payload with single command per line and send it to the exposed api endpoint `/api/commands`:
-
-```plain
-HTTP POST http://localhost:5000/api/commands
-REDIS SET value1 mycache account.redis.cache.windows.net:6380,password=key,ssl=True,abortConnect=False
-REDIS GET mycache account.redis.cache.windows.net:6380,password=key=,ssl=True,abortConnect=False
-```
-
-Here is example response:
-
-```plain
--> Start: HTTP POST http://localhost:5000/api/commands
--> Start: REDIS SET hello2 mycache account.redis.cache.windows.net:6380,password=key,ssl=True,abortConnect=False
-SET: mycache=value1
-<- End: REDIS SET hello2 mycache account.redis.cache.windows.net:6380,password=key,ssl=True,abortConnect=False
--> Start: REDIS GET mycache account.redis.cache.windows.net:6380,password=key,ssl=True,abortConnect=False
-GET: value1
-<- End: REDIS GET mycache account.redis.cache.windows.net:6380,password=key,ssl=True,abortConnect=False
-<- End: HTTP POST http://localhost:5000/api/commands
-```
 
 ## Architecture examples
 
