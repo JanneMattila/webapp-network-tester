@@ -31,7 +31,7 @@ It currently has support for following operations:
 | TCP        | N/A         | Connects to target host and port according to parameters                                   |
 | BLOB       | GET         | Downloads blob according to parameters defining file, container and storage account        |
 | BLOB       | POST        | Uploads blob according to parameters defining file, container and storage account          |
-| FILE       | READ        | Read file from filesystem according to parameter defining file path                       |
+| FILE       | READ        | Read file from filesystem according to parameter defining file path                        |
 | FILE       | WRITE       | Write file from filesystem according to parameters defining file path and content          |
 | REDIS      | GET         | Gets item from cache according to parameters defining key and redis cache                  |
 | REDIS      | SET         | Sets item from cache according to parameters defining key and redis cache                  |
@@ -46,7 +46,19 @@ It currently has support for following operations:
 
 ### Operation examples
 
-Here are few example commands:
+You can use `curl` to invoke the api. For example, to invoke `HTTP GET` request to `https://github.com`:
+
+```bash
+curl -X POST --data 'HTTP GET "https://github.com"' https://localhost:44328/api/commands
+```
+
+Alternative, you can use swagger endpoint to invoke the api directly in browser:
+
+```
+https://localhost:44328/swagger/index.html
+```
+
+Here are few example command payloads:
 
 `HTTP GET http://target/`: Invokes GET request to target address `http://target/`.
 
