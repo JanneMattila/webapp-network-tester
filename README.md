@@ -18,67 +18,6 @@ See example end-to-end scenario [Azure Firewall Demo](https://github.com/JanneMa
 for more details. Webapp for network testing is used 
 in that implementation for testing various firewall rules.
 
-## How to create image locally
-
-```bash
-# Build container image
-docker build . -f src/WebApp/Dockerfile -t webapp-network-tester:latest
-
-# Run container using command
-docker run -it --rm -p "2001:80" webapp-network-tester:latest
-``` 
-
-If you want to publish your image to ACR ([instructions](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-docker-cli)):
-
-```bash
-$acrName = "<your ACR name>"
-# Login
-az acr login --name $acrName
-
-# Tag image
-docker tag webapp-network-tester "$acrName.azurecr.io/webapp-network-tester"
-
-# Push image
-docker push "$acrName.azurecr.io/webapp-network-tester"
-```
-
-## How to deploy to Azure App Service
-
-Here's PowerShell example, how you can deploy Azure App Service
-using image directly from [Docker Hub](https://hub.docker.com/r/jannemattila/webapp-network-tester):
-
-```powershell
-$appServiceName="networktester000001"
-$appServicePlanName="ntPlan"
-$resourceGroup="network-tester-rg"
-$location="westeurope"
-$image="jannemattila/webapp-network-tester"
-
-# Login to Azure
-az login
-
-# List subscriptions
-az account list -o table
-
-# *Explicitly* select your working context
-az account set --subscription <SubscriptionName>
-
-# Show current context
-az account show -o table
-
-# Create new resource group
-az group create --name $resourceGroup --location $location -o table
-
-# Create App Service Plan
-az appservice plan create --name $appServicePlanName --resource-group $resourceGroup --is-linux --number-of-workers 1 --sku P1V2 -o table
-
-# Create App Service
-az webapp create --name $appServiceName --plan $appServicePlanName --resource-group $resourceGroup -i $image -o table
-
-# Wipe out the resources
-az group delete --name $resourceGroup -y
-```
-
 ## Usage
 
 ### Supported operations
@@ -92,6 +31,8 @@ It currently has support for following operations:
 | TCP        | N/A         | Connects to target host and port according to parameters                                   |
 | BLOB       | GET         | Downloads blob according to parameters defining file, container and storage account        |
 | BLOB       | POST        | Uploads blob according to parameters defining file, container and storage account          |
+| FILE       | READ        | Read file from filesystem according to parameter defining file path                       |
+| FILE       | WRITE       | Write file from filesystem according to parameters defining file path and content          |
 | REDIS      | GET         | Gets item from cache according to parameters defining key and redis cache                  |
 | REDIS      | SET         | Sets item from cache according to parameters defining key and redis cache                  |
 | SQL        | QUERY       | Executes SQL query according to parameters                                                 |
@@ -545,6 +486,67 @@ Note: There is additional [object_id](https://docs.microsoft.com/en-us/azure/act
   "token_type":"Bearer",
   "client_id":"d3465d27-4178-477e-85d5-c75259776d8d"
 }
+```
+
+## How to create image locally
+
+```bash
+# Build container image
+docker build . -f src/WebApp/Dockerfile -t webapp-network-tester:latest
+
+# Run container using command
+docker run -it --rm -p "2001:80" webapp-network-tester:latest
+``` 
+
+If you want to publish your image to ACR ([instructions](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-docker-cli)):
+
+```bash
+$acrName = "<your ACR name>"
+# Login
+az acr login --name $acrName
+
+# Tag image
+docker tag webapp-network-tester "$acrName.azurecr.io/webapp-network-tester"
+
+# Push image
+docker push "$acrName.azurecr.io/webapp-network-tester"
+```
+
+## How to deploy to Azure App Service
+
+Here's PowerShell example, how you can deploy Azure App Service
+using image directly from [Docker Hub](https://hub.docker.com/r/jannemattila/webapp-network-tester):
+
+```powershell
+$appServiceName="networktester000001"
+$appServicePlanName="ntPlan"
+$resourceGroup="network-tester-rg"
+$location="westeurope"
+$image="jannemattila/webapp-network-tester"
+
+# Login to Azure
+az login
+
+# List subscriptions
+az account list -o table
+
+# *Explicitly* select your working context
+az account set --subscription <SubscriptionName>
+
+# Show current context
+az account show -o table
+
+# Create new resource group
+az group create --name $resourceGroup --location $location -o table
+
+# Create App Service Plan
+az appservice plan create --name $appServicePlanName --resource-group $resourceGroup --is-linux --number-of-workers 1 --sku P1V2 -o table
+
+# Create App Service
+az webapp create --name $appServiceName --plan $appServicePlanName --resource-group $resourceGroup -i $image -o table
+
+# Wipe out the resources
+az group delete --name $resourceGroup -y
 ```
 
 ## Links

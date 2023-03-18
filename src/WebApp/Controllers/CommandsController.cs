@@ -98,6 +98,7 @@ public class CommandsController : ControllerBase
                         "HTTP" => await ExecuteHttpAsync(parameters, childRequest),
                         "TCP" => await ExecuteTcpAsync(parameters),
                         "BLOB" => await ExecuteBlobAsync(parameters),
+                        "FILE" => await ExecuteFileAsync(parameters),
                         "REDIS" => await ExecuteRedisAsync(parameters),
                         "SQL" => await ExecuteSQLAsync(parameters),
                         "IPLOOKUP" => await ExecuteIpLookUpAsync(parameters),
@@ -249,6 +250,23 @@ public class CommandsController : ControllerBase
             using var stream = new MemoryStream(Encoding.UTF8.GetBytes(parameters[1]));
             var blobResponse = await blobClient.UploadAsync(stream);
             return $"Wrote {blobResponse.Value.ETag}";
+        }
+    }
+
+    private async Task<string> ExecuteFileAsync(string[] parameters)
+    {
+        if (parameters[0] == "READ")
+        {
+            if (System.IO.File.Exists(parameters[1]))
+            {
+                return await System.IO.File.ReadAllTextAsync(parameters[1]);
+            }
+            return $"READ: File \"{parameters[1]}\" not found";
+        }
+        else
+        {
+            await System.IO.File.WriteAllTextAsync(parameters[1], parameters[2]);
+            return $"WRITE: {parameters[1]}={parameters[2]}";
         }
     }
 

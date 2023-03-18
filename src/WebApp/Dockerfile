@@ -1,6 +1,5 @@
 # Build image(https://hub.docker.com/_/microsoft-dotnet-core-sdk/)
-#FROM mcr.microsoft.com/dotnet/sdk:6.0.201-alpine3.15-amd64 AS build
-FROM mcr.microsoft.com/dotnet/sdk:7.0.100-bullseye-slim-amd64 AS build
+FROM mcr.microsoft.com/dotnet/sdk:7.0.202-bullseye-slim-amd64 AS build
 
 # Install to build containers
 # - gcc and libs
@@ -47,8 +46,7 @@ RUN dotnet build "WebApp.csproj" -c Release -o /app/build
 RUN dotnet publish "WebApp.csproj" -c Release -o /app/publish
 
 # Release image
-#FROM mcr.microsoft.com/dotnet/aspnet:6.0.3-alpine3.15-amd64 as final
-FROM mcr.microsoft.com/dotnet/aspnet:7.0.0-bullseye-slim-amd64 as final
+FROM mcr.microsoft.com/dotnet/aspnet:7.0.4-bullseye-slim-amd64 as final
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
 EXPOSE 80
