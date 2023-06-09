@@ -43,7 +43,14 @@ public class TextPlainInputFormatter : TextInputFormatter
             var sb = new StringBuilder();
             foreach (var (key, value) in context.HttpContext.Request.Form)
             {
-                sb.Append($"{key}={value}");
+                if (string.IsNullOrEmpty(value))
+                {
+                    sb.Append($"{key}");
+                }
+                else
+                {
+                    sb.Append($"{key}={value}");
+                }
             }
             data = sb.ToString();
         }
