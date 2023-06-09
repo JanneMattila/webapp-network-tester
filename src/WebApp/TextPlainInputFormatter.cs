@@ -40,7 +40,12 @@ public class TextPlainInputFormatter : TextInputFormatter
         string data = null;
         if (context.HttpContext.Request.HasFormContentType && context.HttpContext.Request.Form.Any())
         {
-            data = context.HttpContext.Request.Form.First().Key;
+            var sb = new StringBuilder();
+            foreach (var (key, value) in context.HttpContext.Request.Form)
+            {
+                sb.Append($"{key}={value}");
+            }
+            data = sb.ToString();
         }
         else
         {
