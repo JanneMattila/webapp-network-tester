@@ -2,8 +2,13 @@ variables:
   repository: 'jannemattila/webapp-network-tester'
 
 trigger:
-- master
-- develop
+  branches:
+    include:
+    - master
+    - develop
+  paths:
+    include:
+    - src
 
 name: 1.0.$(Rev:r)
 stages:

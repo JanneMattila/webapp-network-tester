@@ -31,6 +31,7 @@ It currently has support for following operations:
 | TCP        | N/A         | Connects to target host and port according to parameters                                   |
 | BLOB       | GET         | Downloads blob according to parameters defining file, container and storage account        |
 | BLOB       | POST        | Uploads blob according to parameters defining file, container and storage account          |
+| FILE       | LIST        | List files from filesystem according to parameter defining directory path                  |
 | FILE       | READ        | Read file from filesystem according to parameter defining file path                        |
 | FILE       | WRITE       | Write file from filesystem according to parameters defining file path and content          |
 | REDIS      | GET         | Gets item from cache according to parameters defining key and redis cache                  |

@@ -255,7 +255,15 @@ public class CommandsController : ControllerBase
 
     private async Task<string> ExecuteFileAsync(string[] parameters)
     {
-        if (parameters[0] == "READ")
+        if (parameters[0] == "LIST")
+        {
+            if (System.IO.Directory.Exists(parameters[1]))
+            {
+                return string.Join(Environment.NewLine, System.IO.Directory.EnumerateFiles(parameters[1]));
+            }
+            return $"LIST: Directory \"{parameters[1]}\" not found";
+        }
+        else if (parameters[0] == "READ")
         {
             if (System.IO.File.Exists(parameters[1]))
             {
