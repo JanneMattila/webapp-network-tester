@@ -259,7 +259,7 @@ public class CommandsController : ControllerBase
         {
             if (System.IO.Directory.Exists(parameters[1]))
             {
-                return string.Join(Environment.NewLine, System.IO.Directory.EnumerateFiles(parameters[1]));
+                return string.Join(Environment.NewLine, System.IO.Directory.EnumerateFileSystemEntries(parameters[1]));
             }
             return $"LIST: Directory \"{parameters[1]}\" not found";
         }
