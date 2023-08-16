@@ -1,9 +1,19 @@
 @endpoint = http://localhost:5000
+@blob_connectionstring = {{$dotenv blob_connectionstring}}
 
 ### Execute commands
 POST {{endpoint}}/api/commands HTTP/1.1
 
-HTTP GET http://localhost:5000/
+HTTP GET https://jannemattila.com
+
+### Execute commands
+POST {{endpoint}}/api/commands HTTP/1.1
+
+TCP jannemattila.com 80
+
+### Execute commands
+POST {{endpoint}}/api/commands HTTP/1.1
+
 NSLOOKUP bing.com
 
 ### Execute commands
@@ -19,9 +29,19 @@ NSLOOKUP bing.com 8.8.8.8
 ### Execute commands
 POST {{endpoint}}/api/commands HTTP/1.1
 
+BLOB POST hello data.csv files {{blob_connectionstring}}
+
+### Execute commands
+POST {{endpoint}}/api/commands HTTP/1.1
+
+BLOB GET data.csv files {{blob_connectionstring}}
+
+### Execute commands
+POST {{endpoint}}/api/commands HTTP/1.1
+
 HTTP POST http://localhost:5000/api/commands
-BLOB GET data.csv files DefaultEndpointsProtocol=https;AccountName=demoaccount;AccountKey=key;EndpointSuffix=core.windows.net
-BLOB POST hello data2.csv files DefaultEndpointsProtocol=https;AccountName=demoaccount;AccountKey=key;EndpointSuffix=core.windows.ne
+BLOB GET data.csv files {{blob_connectionstring}}
+BLOB POST hello data2.csv files {{blob_connectionstring}}
 
 ### Execute commands
 POST {{endpoint}}/api/commands HTTP/1.1
@@ -61,12 +81,3 @@ POST {{endpoint}}/api/commands HTTP/1.1
 
 INFO ENV COMPUTERNAME
 
-### Execute commands
-POST {{endpoint}}/api/commands HTTP/1.1
-
-HTTP GET https://api.ipify.org/
-
-### Execute commands
-POST {{endpoint}}/api/commands HTTP/1.1
-
-TCP api.ipify.org 80
