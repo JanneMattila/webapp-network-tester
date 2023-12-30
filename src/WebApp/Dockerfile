@@ -49,8 +49,7 @@ RUN dotnet publish "WebApp.csproj" -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:8.0.0-jammy-amd64 as final
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
-EXPOSE 80
-EXPOSE 443
+EXPOSE 8080
 # Ports for iperf3
 EXPOSE 5201/tcp 5201/udp
 # Port for qperf
