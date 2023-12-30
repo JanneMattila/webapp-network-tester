@@ -46,7 +46,7 @@ RUN dotnet build "WebApp.csproj" -c Release -o /app/build
 RUN dotnet publish "WebApp.csproj" -c Release -o /app/publish
 
 # Release image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0.0-jammy-chiseled-amd64 as final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0.0-jammy-amd64 as final
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
 EXPOSE 80
