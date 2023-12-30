@@ -30,6 +30,7 @@ namespace WebApp.Controllers;
 public class CommandsController : ControllerBase
 {
     private readonly ILogger<CommandsController> _logger;
+    private readonly HttpClient _client = new();
 
     public CommandsController(ILogger<CommandsController> logger)
     {
@@ -173,8 +174,6 @@ public class CommandsController : ControllerBase
 
     private async Task<string> ExecuteHttpAsync(string[] parameters, string request)
     {
-        using var client = new HttpClient();
-
         // Process headers
         if (parameters.Length > 2)
         {
@@ -182,19 +181,19 @@ public class CommandsController : ControllerBase
             foreach (var header in headers)
             {
                 var data = header.Split('=');
-                client.DefaultRequestHeaders.Add(data[0], data[1]);
+                _client.DefaultRequestHeaders.Add(data[0], data[1]);
             }
         }
 
         HttpResponseMessage response;
         if (parameters[0] == "GET")
         {
-            response = await client.GetAsync(parameters[1]);
+            response = await _client.GetAsync(parameters[1]);
         }
         else
         {
             var content = new StringContent(request);
-            response = await client.PostAsync(parameters[1], content);
+            response = await _client.PostAsync(parameters[1], content);
         }
         if (response.IsSuccessStatusCode)
         {
