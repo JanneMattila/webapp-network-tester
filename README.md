@@ -40,6 +40,7 @@ It currently has support for following operations:
 | IPLOOKUP   | N/A         | Gets IP address of defined in parameter                                                    |
 | NSLOOKUP   | N/A         | Get IP address and relevant network related information about address defined in parameter |
 | INFO       | HOSTNAME    | Gets hostname of the container                                                             |
+| INFO       | NETWORK     | Gets network interface details such as gateway and DNS servers addresses                   |
 | INFO       | ENV         | Gets single or all environment variables                                                   |
 | HEADER     | NAME        | Gets single or all HTTP headers                                                            |
 | CONNECTION | IP          | Gets remote address IP                                                                     |

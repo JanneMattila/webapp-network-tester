@@ -15,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
@@ -370,6 +371,54 @@ public class CommandsController : ControllerBase
         if (parameters[0] == "HOSTNAME")
         {
             return $"HOSTNAME: {Environment.MachineName}";
+        }
+        else if (parameters[0] == "NETWORK")
+        {
+            var networkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
+            var output = new StringBuilder();
+            foreach (var networkInterface in networkInterfaces)
+            {
+                output.AppendLine($"Network interface: {networkInterface.Name}");
+                output.AppendLine($"Id: {networkInterface.Id}");
+                output.AppendLine($"Description: {networkInterface.Description}");
+                var ipProps = networkInterface.GetIPProperties();
+
+                output.AppendLine($"Statistics:");
+
+                var stats = networkInterface.GetIPStatistics();
+                output.AppendLine($"- Bytes received: {stats.BytesReceived}");
+                output.AppendLine($"- Bytes sent: {stats.BytesSent}");
+                output.AppendLine($"- Incoming packets discarded: {stats.IncomingPacketsDiscarded}");
+                output.AppendLine($"- Incoming packets with errors: {stats.IncomingPacketsWithErrors}");
+                if (OperatingSystem.IsWindows())
+                {
+                    output.AppendLine($"- Incoming unknown protocol packets: {stats.IncomingUnknownProtocolPackets}");
+                    output.AppendLine($"- Non unicast packets sent: {stats.NonUnicastPacketsSent}");
+                    output.AppendLine($"- Outgoing packets discarded: {stats.OutgoingPacketsDiscarded}");
+                }
+                output.AppendLine($"- Non unicast packets received: {stats.NonUnicastPacketsReceived}");
+                output.AppendLine($"- Outgoing packets with errors: {stats.OutgoingPacketsWithErrors}");
+                output.AppendLine($"- Output queue length: {stats.OutputQueueLength}");
+                output.AppendLine($"- Unicast packets received: {stats.UnicastPacketsReceived}");
+                output.AppendLine($"- Unicast packets sent: {stats.UnicastPacketsSent}");
+
+                output.AppendLine($"Status: {networkInterface.OperationalStatus}");
+                output.AppendLine($"Type: {networkInterface.NetworkInterfaceType}");
+                output.AppendLine($"Speed: {networkInterface.Speed}");
+
+                output.AppendLine($"Gateway addresses:");
+                foreach (var gateway in ipProps.GatewayAddresses)
+                {
+                    output.AppendLine($"- Gateway address: {gateway.Address}");
+                }
+
+                output.AppendLine($"DNS addresses:");
+                foreach (var dns in ipProps.DnsAddresses)
+                {
+                    output.AppendLine($"- DNS address: {dns}");
+                }
+            }
+            return output.ToString();
         }
         else
         {
