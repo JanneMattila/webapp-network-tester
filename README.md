@@ -558,6 +558,9 @@ az appservice plan create --name $appServicePlanName --resource-group $resourceG
 # Create App Service
 az webapp create --name $appServiceName --plan $appServicePlanName --resource-group $resourceGroup -i $image -o table
 
+# Set port mapping
+az webapp config appsettings set -g $resourceGroup -n $appServiceName --settings WEBSITES_PORT=8080
+
 # Wipe out the resources
 az group delete --name $resourceGroup -y
 ```
