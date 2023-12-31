@@ -149,7 +149,7 @@ HTTP GET http://localhost/
 You should get following reply:
 
 ```html
-<html><body>Hello there!</body></html>
+Hello there!
 ```
 
 Now you are ready to test you configurations!
@@ -352,7 +352,7 @@ CustomerID;NameStyle;Title;FirstName
 3;False;Ms.;Donna
 ```
 
-This prooves that connectivity is working from the `backend` app service but
+This proves that connectivity is working from the `backend` app service but
 you cannot directly connect from `front` to the database.
 
 ### Multi-container App Service

@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Formatters;
-using System;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace WebApp;
 
@@ -38,7 +35,7 @@ public class TextPlainInputFormatter : TextInputFormatter
     public override async Task<InputFormatterResult> ReadRequestBodyAsync(InputFormatterContext context, Encoding encoding)
     {
         string data = null;
-        if (context.HttpContext.Request.HasFormContentType && context.HttpContext.Request.Form.Any())
+        if (context.HttpContext.Request.HasFormContentType && context.HttpContext.Request.Form.Count != 0)
         {
             var sb = new StringBuilder();
             foreach (var (key, value) in context.HttpContext.Request.Form)

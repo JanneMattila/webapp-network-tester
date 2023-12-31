@@ -1,25 +1,12 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using System;
-using System.IO;
 using System.Reflection;
 
 namespace WebApp;
 
-public class Startup
+public class Startup(IConfiguration configuration)
 {
-    public Startup(IConfiguration configuration)
-    {
-        Configuration = configuration;
-    }
+    public IConfiguration Configuration { get; } = configuration;
 
-    public IConfiguration Configuration { get; }
-
-    // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddHttpClient();
@@ -49,7 +36,6 @@ public class Startup
         });
     }
 
-    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         if (env.IsDevelopment())
@@ -57,13 +43,7 @@ public class Startup
             app.UseDeveloperExceptionPage();
         }
 
-        app.UseDefaultFiles();
-
-        app.UseStaticFiles();
-
         app.UseRouting();
-
-        app.UseAuthorization();
 
         app.UseSwagger();
 
@@ -75,6 +55,10 @@ public class Startup
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
+            endpoints.Map("", () =>
+            {
+                return "Hello there!";
+            });
         });
     }
 }

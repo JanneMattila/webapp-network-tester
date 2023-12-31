@@ -1,42 +1,30 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using DnsClient;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
-using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace WebApp.Controllers;
 
 /// <summary>
-/// Entrypoint for executing remote commands
+/// Endpoint for executing remote commands
 /// </summary>
 [Produces("plain/text")]
 [Route("api/[controller]")]
 [ApiController]
-public class CommandsController : ControllerBase
+public class CommandsController(ILogger<CommandsController> logger) : ControllerBase
 {
-    private readonly ILogger<CommandsController> _logger;
+    private readonly ILogger<CommandsController> _logger = logger;
     private readonly HttpClient _client = new();
-
-    public CommandsController(ILogger<CommandsController> logger)
-    {
-        _logger = logger;
-    }
 
     /// <summary>
     /// Execute network testing scenario.
@@ -45,7 +33,7 @@ public class CommandsController : ControllerBase
     /// Example find request:
     ///
     ///     POST /api/commands
-    ///     IPLOOKUP bing.com
+    ///     IPLOOKUP office.com
     ///
     /// </remarks>
     /// <param name="body">Network test operation request</param>
@@ -127,14 +115,15 @@ public class CommandsController : ControllerBase
         return Content(output.ToString());
     }
 
-    private List<string> ParseCommand(string requestContent)
+    [SuppressMessage("Style", "IDE0305:Simplify collection initialization", Justification = "<Pending>")]
+    private static List<string> ParseCommand(string requestContent)
     {
         return requestContent.Replace("\r", "")
             .Split("\n", StringSplitOptions.RemoveEmptyEntries)
             .ToList();
     }
 
-    private List<string> ParseSingleCommand(string input)
+    private static List<string> ParseSingleCommand(string input)
     {
         const char separator = '\"';
         const char space = ' ';
@@ -215,7 +204,7 @@ public class CommandsController : ControllerBase
         }
     }
 
-    private async Task<string> ExecuteTcpAsync(string[] parameters)
+    private static async Task<string> ExecuteTcpAsync(string[] parameters)
     {
         using var client = new TcpClient();
         try
@@ -230,7 +219,7 @@ public class CommandsController : ControllerBase
         }
     }
 
-    private async Task<string> ExecuteBlobAsync(string[] parameters)
+    private static async Task<string> ExecuteBlobAsync(string[] parameters)
     {
         var param = parameters.Reverse().ToArray();
         var blobServiceClient = new BlobServiceClient(param[0]);
@@ -253,7 +242,7 @@ public class CommandsController : ControllerBase
         }
     }
 
-    private async Task<string> ExecuteFileAsync(string[] parameters)
+    private static async Task<string> ExecuteFileAsync(string[] parameters)
     {
         if (parameters[0] == "LIST")
         {
@@ -278,7 +267,7 @@ public class CommandsController : ControllerBase
         }
     }
 
-    private async Task<string> ExecuteRedisAsync(string[] parameters)
+    private static async Task<string> ExecuteRedisAsync(string[] parameters)
     {
         var param = parameters.Reverse().ToArray();
         using var redis = ConnectionMultiplexer.Connect(param[0]);
@@ -296,7 +285,7 @@ public class CommandsController : ControllerBase
         }
     }
 
-    private async Task<string> ExecuteSQLAsync(string[] parameters)
+    private static async Task<string> ExecuteSQLAsync(string[] parameters)
     {
         var output = new StringBuilder();
         var param = parameters.Reverse().ToArray();
@@ -325,7 +314,7 @@ public class CommandsController : ControllerBase
         return output.ToString();
     }
 
-    private async Task<string> ExecuteIpLookUpAsync(string[] parameters)
+    private static async Task<string> ExecuteIpLookUpAsync(string[] parameters)
     {
         var output = new StringBuilder();
         var addresses = await Dns.GetHostAddressesAsync(parameters[0]);
@@ -336,7 +325,7 @@ public class CommandsController : ControllerBase
         return output.ToString();
     }
 
-    private async Task<string> ExecuteNsLookUpAsync(string[] parameters)
+    private static async Task<string> ExecuteNsLookUpAsync(string[] parameters)
     {
         var output = new StringBuilder();
         LookupClientOptions options;
@@ -366,7 +355,7 @@ public class CommandsController : ControllerBase
         return output.ToString();
     }
 
-    private string ExecuteInfo(string[] parameters)
+    private static string ExecuteInfo(string[] parameters)
     {
         if (parameters[0] == "HOSTNAME")
         {
