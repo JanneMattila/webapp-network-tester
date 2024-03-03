@@ -12,6 +12,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 
 namespace WebApp.Controllers;
 
@@ -118,8 +119,20 @@ public class CommandsController(ILogger<CommandsController> logger) : Controller
     [SuppressMessage("Style", "IDE0305:Simplify collection initialization", Justification = "<Pending>")]
     private static List<string> ParseCommand(string requestContent)
     {
+        if (requestContent.StartsWith("\"") &&
+            requestContent.EndsWith("\""))
+        {
+            try
+            {
+                var content = JsonSerializer.Deserialize<string>(requestContent);
+                requestContent = content;
+            }
+            catch (Exception)
+            {
+            }
+        }
+
         return requestContent.Replace("\r", "")
-            .Replace("\\n", "\n")
             .Split("\n", StringSplitOptions.RemoveEmptyEntries)
             .ToList();
     }
