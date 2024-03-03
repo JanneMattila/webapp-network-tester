@@ -119,6 +119,7 @@ public class CommandsController(ILogger<CommandsController> logger) : Controller
     private static List<string> ParseCommand(string requestContent)
     {
         return requestContent.Replace("\r", "")
+            .Replace("\\n", "\n")
             .Split("\n", StringSplitOptions.RemoveEmptyEntries)
             .ToList();
     }
