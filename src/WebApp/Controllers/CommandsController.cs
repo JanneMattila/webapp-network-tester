@@ -109,7 +109,7 @@ public class CommandsController(ILogger<CommandsController> logger) : Controller
                     output.AppendLine(ex.ToString());
                 }
             }
-            output.AppendLine($"<- End: {input} {time.Elapsed.TotalMilliseconds:F}ms");
+            output.Append($"<- End: {input} {time.Elapsed.TotalMilliseconds:F}ms");
 
             requestCommands = requestCommands.Skip(1).ToList();
         }
