@@ -1,5 +1,5 @@
 # Build image(https://hub.docker.com/_/microsoft-dotnet-core-sdk/)
-FROM mcr.microsoft.com/dotnet/sdk:8.0.100-1-jammy-amd64 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0.203-jammy-amd64 AS build
 
 # Install to build containers
 # - gcc and libs
@@ -46,7 +46,7 @@ RUN dotnet build "WebApp.csproj" -c Release -o /app/build
 RUN dotnet publish "WebApp.csproj" -c Release -o /app/publish
 
 # Release image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0.0-jammy-amd64 as final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0.3-jammy-amd64 as final
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
 EXPOSE 8080
