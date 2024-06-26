@@ -1,5 +1,5 @@
 # Build image(https://hub.docker.com/_/microsoft-dotnet-core-sdk/)
-FROM mcr.microsoft.com/dotnet/sdk:8.0.203-jammy-amd64 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
 # Install to build containers
 # - gcc and libs

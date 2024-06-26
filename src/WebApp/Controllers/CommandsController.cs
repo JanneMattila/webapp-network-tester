@@ -68,6 +68,11 @@ public class CommandsController(ILogger<CommandsController> logger) : Controller
                 break;
             }
 
+            if (output.Length > 0)
+            {
+                output.AppendLine();
+            }
+
             output.AppendLine($"-> Start: {input}");
             var commands = ParseSingleCommand(input);
             if (commands.Count > 0)

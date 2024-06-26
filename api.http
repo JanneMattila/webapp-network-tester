@@ -46,6 +46,13 @@ BLOB POST hello data2.csv files {{blob_connectionstring}}
 ### Execute commands
 POST {{endpoint}}/api/commands HTTP/1.1
 
+INFO HOSTNAME
+HTTP POST http://localhost:5000/api/commands
+INFO HOSTNAME
+
+### Execute commands
+POST {{endpoint}}/api/commands HTTP/1.1
+
 HTTP POST http://localhost:5000/api/commands
 REDIS SET hello mycache account.redis.cache.windows.net:6380,password=key,ssl=True,abortConnect=False
 REDIS GET mycache account.redis.cache.windows.net:6380,password=key,ssl=True,abortConnect=False
