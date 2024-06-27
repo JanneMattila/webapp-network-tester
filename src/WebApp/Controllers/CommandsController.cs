@@ -28,6 +28,26 @@ public class CommandsController(ILogger<CommandsController> logger) : Controller
     private readonly HttpClient _client = new();
 
     /// <summary>
+    /// Provides instructions for using the POST method.
+    /// </summary>
+    /// <remarks>
+    /// This method returns a simple instruction message advising to use the POST method for submitting commands.
+    ///
+    ///     GET /api/commands
+    ///
+    /// The response will be a plain text message.
+    /// </remarks>
+    /// <returns>A plain text instruction message.</returns>
+    /// <response code="200">Returns instruction message advising to use POST for submitting commands.</response>
+    [HttpGet]
+    [Consumes("text/plain", "application/x-www-form-urlencoded", "application/json")]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK, "plain/text")]
+    public ActionResult<string> Get()
+    {
+        return Content($"Use POST for submitting commands.{Environment.NewLine}{Environment.NewLine}{ExecuteHelpAsync()}");
+    }
+
+    /// <summary>
     /// Execute network testing scenario.
     /// </summary>
     /// <remarks>
@@ -91,6 +111,7 @@ public class CommandsController(ILogger<CommandsController> logger) : Controller
                 {
                     var childOutput = commands[0] switch
                     {
+                        "HELP" => ExecuteHelpAsync(),
                         "HTTP" => await ExecuteHttpAsync(parameters, childRequest),
                         "TCP" => await ExecuteTcpAsync(parameters),
                         "BLOB" => await ExecuteBlobAsync(parameters),
@@ -106,7 +127,14 @@ public class CommandsController(ILogger<CommandsController> logger) : Controller
                     };
                     if (!string.IsNullOrEmpty(input))
                     {
-                        output.AppendLine(childOutput);
+                        if (childOutput.EndsWith(Environment.NewLine))
+                        {
+                            output.Append(childOutput);
+                        }
+                        else
+                        {
+                            output.AppendLine(childOutput);
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -179,6 +207,24 @@ public class CommandsController(ILogger<CommandsController> logger) : Controller
             parameters.Add(parameter);
         }
         return parameters;
+    }
+
+    private static string ExecuteHelpAsync()
+    {
+        return @"Commands:
+- HELP: Display this help message
+- HTTP GET|POST|PUT|DELETE <url> [header1=value1|header2=value2|...]
+- TCP <host> <port>
+- BLOB <connectionString> <container> <blob> [content]
+- FILE LIST|READ|WRITE <file> [content]
+- REDIS <connectionString> GET|SET <key> [value]
+- SQL <connectionString> <query>
+- IPLOOKUP <host>
+- NSLOOKUP <host> [dnsServer]
+- INFO HOSTNAME|NETWORK|ENV [variable]
+- HEADER [header]
+- CONNECTION [IP]
+";
     }
 
     private async Task<string> ExecuteHttpAsync(string[] parameters, string request)
