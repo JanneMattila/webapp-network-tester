@@ -146,6 +146,8 @@ public class CommandsController(ILogger<CommandsController> logger) : Controller
 
             requestCommands = requestCommands.Skip(1).ToList();
         }
+
+        output.AppendLine();
         return Content(output.ToString());
     }
 
