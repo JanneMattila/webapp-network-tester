@@ -113,6 +113,9 @@ Executes defined T-SQL using the defined connection string as last argument.
 `IPLOOKUP account.redis.cache.windows.net`:
 Gets ip address of the `account.redis.cache.windows.net`.
 
+`IPLOOKUP account.redis.cache.windows.net 1.1.1.1`:
+Gets ip address of the `account.redis.cache.windows.net` using `1.1.1.1` (Cloudflare DNS) as name server.
+
 `NSLOOKUP account.redis.cache.windows.net`:
 Gets ip address and relevant network related information of the `account.redis.cache.windows.net`.
 

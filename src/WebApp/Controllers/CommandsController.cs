@@ -384,8 +384,24 @@ public class CommandsController(ILogger<CommandsController> logger) : Controller
     private static async Task<string> ExecuteIpLookUpAsync(string[] parameters)
     {
         var output = new StringBuilder();
-        var addresses = await Dns.GetHostAddressesAsync(parameters[0]);
-        foreach (var address in addresses)
+        LookupClientOptions options;
+
+        if (parameters.Length > 1)
+        {
+            options = new LookupClientOptions(IPAddress.Parse(parameters[1]));
+        }
+        else
+        {
+            options = new LookupClientOptions();
+        }
+
+        options.UseCache = false;
+        options.Recursion = true;
+
+        var lookup = new LookupClient(options);
+
+        var query = await lookup.GetHostEntryAsync(parameters[0]);
+        foreach (var address in query.AddressList)
         {
             output.AppendLine($"IP: {address}");
         }

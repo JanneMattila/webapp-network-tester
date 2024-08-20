@@ -29,6 +29,11 @@ IPLOOKUP bing.com
 ### Execute commands
 POST {{endpoint}}/api/commands HTTP/1.1
 
+IPLOOKUP bing.com 8.8.8.8
+
+### Execute commands
+POST {{endpoint}}/api/commands HTTP/1.1
+
 NSLOOKUP bing.com 8.8.8.8
 
 ### Execute commands
