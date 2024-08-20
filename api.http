@@ -34,6 +34,11 @@ IPLOOKUP bing.com 8.8.8.8
 ### Execute commands
 POST {{endpoint}}/api/commands HTTP/1.1
 
+IPLOOKUP network-app-clusterip-svc.network-app.svc.cluster.local 1.1.1.1
+
+### Execute commands
+POST {{endpoint}}/api/commands HTTP/1.1
+
 NSLOOKUP bing.com 8.8.8.8
 
 ### Execute commands

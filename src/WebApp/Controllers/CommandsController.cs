@@ -221,7 +221,7 @@ public class CommandsController(ILogger<CommandsController> logger) : Controller
 - FILE LIST|READ|WRITE <file> [content]
 - REDIS <connectionString> GET|SET <key> [value]
 - SQL <connectionString> <query>
-- IPLOOKUP <host>
+- IPLOOKUP <host> [dnsServer]
 - NSLOOKUP <host> [dnsServer]
 - INFO HOSTNAME|NETWORK|ENV [variable]
 - HEADER [header]
@@ -384,26 +384,31 @@ public class CommandsController(ILogger<CommandsController> logger) : Controller
     private static async Task<string> ExecuteIpLookUpAsync(string[] parameters)
     {
         var output = new StringBuilder();
-        LookupClientOptions options;
-
         if (parameters.Length > 1)
         {
-            options = new LookupClientOptions(IPAddress.Parse(parameters[1]));
+            // Note: Search-domains from /etc/resolv.conf are not respected
+            // https://github.com/MichaCo/DnsClient.NET/issues/4
+            LookupClientOptions options = new(IPAddress.Parse(parameters[1]))
+            {
+                UseCache = false,
+                Recursion = true,
+                ThrowDnsErrors = true
+            };
+
+            var lookup = new LookupClient(options);
+            var query = await lookup.GetHostEntryAsync(parameters[0]);
+            foreach (var address in query.AddressList)
+            {
+                output.AppendLine($"IP: {address}");
+            }
         }
         else
         {
-            options = new LookupClientOptions();
-        }
-
-        options.UseCache = false;
-        options.Recursion = true;
-
-        var lookup = new LookupClient(options);
-
-        var query = await lookup.GetHostEntryAsync(parameters[0]);
-        foreach (var address in query.AddressList)
-        {
-            output.AppendLine($"IP: {address}");
+            var addresses = await Dns.GetHostAddressesAsync(parameters[0]);
+            foreach (var address in addresses)
+            {
+                output.AppendLine($"IP: {address}");
+            }
         }
         return output.ToString();
     }
