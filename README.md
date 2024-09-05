@@ -510,8 +510,14 @@ Note: There is additional [object_id](https://docs.microsoft.com/en-us/azure/act
 # Build container image
 docker build . -f src/WebApp/Dockerfile -t webapp-network-tester:latest
 
+# Build container image with all networking tools
+docker build . -f src/WebApp/Full.Dockerfile -t webapp-network-tester:latest-full
+
 # Run container using command
 docker run -it --rm -p "2001:8080" webapp-network-tester:latest
+
+# Run container using command all networking tools
+docker run -it --rm -p "2001:8080" webapp-network-tester:latest-full
 ``` 
 
 If you want to publish your image to ACR ([instructions](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-docker-cli)):

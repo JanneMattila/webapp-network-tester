@@ -22,9 +22,31 @@ stages:
       inputs:
         containerRegistry: 'DockerHub'
         repository: $(repository)
-        command: 'buildAndPush'
+        command: build
+        arguments:
         Dockerfile: '**/Dockerfile'
         buildContext:
         tags: |
           $(Build.BuildNumber)
           latest
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'DockerHub'
+        repository: $(repository)
+        command: build
+        Dockerfile: '**/Full.Dockerfile'
+        buildContext:
+        tags: |
+          $(Build.BuildNumber)-full
+          latest-full
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'DockerHub'
+        repository: $(repository)
+        command: push
+        buildContext:
+        tags: |
+          $(Build.BuildNumber)
+          $(Build.BuildNumber)-full
+          latest
+          latest-full
