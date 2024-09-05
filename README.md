@@ -534,6 +534,45 @@ docker tag webapp-network-tester "$acrName.azurecr.io/webapp-network-tester"
 docker push "$acrName.azurecr.io/webapp-network-tester"
 ```
 
+## How to download binary
+
+Download the tool:
+
+1. Go to [Actions](https://github.com/JanneMattila/webapp-network-tester/actions/workflows/ci.yml)
+2. Select latest successful run
+3. Download artifact based on your platform
+   - `webappnetworktester-windows` for Windows
+   - `webappnetworktester-linux` for Linux
+   - `webappnetworktester-macos` for macOS
+4. Extract the artifact
+
+Ready to use! Below commands have _optional_ environment variable `ASPNETCORE_URLS` for setting the port.
+Otherwise it will use default port `8080`.
+
+Cmd:
+
+```cmd
+set ASPNETCORE_URLS=http://*:80
+webappnetworktester.exe
+```
+
+PowerShell:
+
+```powershell
+$env:ASPNETCORE_URLS="http://*:80"
+.\webappnetworktester.exe
+```
+
+Bash:
+
+```bash
+unzip webappnetworktester-linux.zip
+chmod +x webappnetworktester
+
+export ASPNETCORE_URLS="http://*:80"
+./webappnetworktester
+```
+
 ## How to deploy to Azure App Service
 
 Here's PowerShell example, how you can deploy Azure App Service
