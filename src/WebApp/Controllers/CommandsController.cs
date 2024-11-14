@@ -151,11 +151,11 @@ public class CommandsController(ILogger<CommandsController> logger) : Controller
         return Content(output.ToString());
     }
 
-    [SuppressMessage("Style", "IDE0305:Simplify collection initialization", Justification = "<Pending>")]
+    [SuppressMessage("Style", "IDE0305:Simplify collection initialization", Justification = "Prefer current code layout")]
     private static List<string> ParseCommand(string requestContent)
     {
-        if (requestContent.StartsWith("\"") &&
-            requestContent.EndsWith("\""))
+        if (requestContent.StartsWith('"') &&
+            requestContent.EndsWith('"'))
         {
             try
             {
