@@ -1,6 +1,6 @@
 # https://hub.docker.com/r/microsoft/dotnet
 # Build image
-FROM mcr.microsoft.com/dotnet/sdk:9.0.100-alpine3.20-amd64 AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0.102-alpine3.21-amd64 AS build
 
 # Cache nuget restore
 WORKDIR /src
@@ -15,7 +15,7 @@ RUN dotnet build "WebApp.csproj" -c Release -o /app/build
 RUN dotnet publish "WebApp.csproj" -c Release -o /app/publish
 
 # Release image
-FROM mcr.microsoft.com/dotnet/aspnet:9.0.0-alpine3.20-amd64 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:9.0.1-alpine3.21-amd64 AS final
 
 EXPOSE 8080
 WORKDIR /app
