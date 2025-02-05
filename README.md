@@ -539,7 +539,8 @@ docker push "$acrName.azurecr.io/webapp-network-tester"
 Download the tool:
 
 1. Go to [Actions](https://github.com/JanneMattila/webapp-network-tester/actions/workflows/ci.yml)
-2. Select latest successful run
+   or [Releases](https://github.com/JanneMattila/webapp-network-tester/releases)
+2. Select latest successful run or version
 3. Download artifact based on your platform
    - `webappnetworktester-windows` for Windows
    - `webappnetworktester-linux` for Linux
