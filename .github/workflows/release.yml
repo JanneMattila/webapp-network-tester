@@ -9,6 +9,9 @@ on:
       release_name:
         description: "Release name"
         required: true
+      run_id:
+        description: "Run ID of the build"
+        required: true
 
 jobs:
   release:
@@ -23,24 +26,32 @@ jobs:
         with:
           name: webappnetworktester-linux
           path: ./artifacts/linux
+          run-id: ${{ github.event.inputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download macOS artifacts
         uses: actions/download-artifact@v4
         with:
           name: webappnetworktester-macos
           path: ./artifacts/macos
+          run-id: ${{ github.event.inputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download Windows artifacts
         uses: actions/download-artifact@v4
         with:
           name: webappnetworktester-windows
           path: ./artifacts/windows
+          run-id: ${{ github.event.inputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download Windows IIS artifacts
         uses: actions/download-artifact@v4
         with:
           name: webappnetworktester-windows-iis
           path: ./artifacts/windows-iis
+          run-id: ${{ github.event.inputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Release
         id: create_release
