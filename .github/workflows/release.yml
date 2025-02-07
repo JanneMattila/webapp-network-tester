@@ -49,4 +49,4 @@ jobs:
             ./artifacts/webappnetworktester-linux.zip
             ./artifacts/webappnetworktester-macos.zip
             ./artifacts/webappnetworktester-windows.zip
-            ./artifacts/webappnetworktester-windows-iis.zip
+            ./artifacts/webappnetworktester.zip
