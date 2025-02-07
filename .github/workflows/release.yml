@@ -6,9 +6,6 @@ on:
       tag_name:
         description: "Tag name"
         required: true
-      release_name:
-        description: "Release name"
-        required: true
       run_id:
         description: "Run ID of the build"
         required: true
@@ -53,53 +50,14 @@ jobs:
           run-id: ${{ github.event.inputs.run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Release
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.inputs.tag_name }}
-          release_name: ${{ github.event.inputs.release_name }}
-          draft: false
-          prerelease: false
-
-      - name: Upload Release Asset (Linux)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/linux/src/WebApp/output/webappnetworktester
-          asset_name: webappnetworktester-linux
-          asset_content_type: application/octet-stream
-
-      - name: Upload Release Asset (macOS)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/macos/src/WebApp/output/webappnetworktester
-          asset_name: webappnetworktester-macos
-          asset_content_type: application/octet-stream
-
-      - name: Upload Release Asset (Windows)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/windows/src/WebApp/output/webappnetworktester.*
-          asset_name: webappnetworktester-windows
-          asset_content_type: application/octet-stream
-
-      - name: Upload Release Asset (Windows IIS)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/windows-iis/src/WebApp/output/
-          asset_name: webappnetworktester-windows-iis
-          asset_content_type: application/octet-stream
+          make_latest: true
+          generate_release_notes: true
+          files: |
+            ./artifacts/linux/webappnetworktester-linux
+            ./artifacts/macos/webappnetworktester-macos
+            ./artifacts/windows/webappnetworktester-windows
+            ./artifacts/windows-iis/webappnetworktester-windows-iis
