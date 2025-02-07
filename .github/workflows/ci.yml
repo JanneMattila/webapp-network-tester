@@ -16,10 +16,13 @@ jobs:
         runtime:
           - os: windows-latest
             rid: win-x64
+            singleexe: true
           - os: ubuntu-latest
             rid: linux-x64
+            singleexe: true
           - os: macos-latest
             rid: osx-x64
+            singleexe: true
 
     runs-on: ${{ matrix.runtime.os }}
 
@@ -40,7 +43,7 @@ jobs:
       - name: Publish ${{ matrix.runtime.os }}
         working-directory: src/WebApp
         env:
-          BuildSingleExe: true
+          BuildSingleExe: ${{ matrix.runtime.singleexe }}
         run: dotnet publish --runtime ${{ matrix.runtime.rid }} --output output
 
       - name: Upload Linux artifacts
@@ -63,8 +66,16 @@ jobs:
 
       - name: Upload Windows artifacts
         uses: actions/upload-artifact@v4
-        if: matrix.runtime.os == 'windows-latest'
+        if: matrix.runtime.os == 'windows-latest' && matrix.runtime.singleexe == true
         with:
           name: webappnetworktester-windows
           path: |
             src/WebApp/output/webappnetworktester.*
+
+      - name: Upload Windows artifacts for IIS
+        uses: actions/upload-artifact@v4
+        if: matrix.runtime.os == 'windows-latest' && matrix.runtime.singleexe == false
+        with:
+          name: webappnetworktester-windows-iis
+          path: |
+            src/WebApp/output/
