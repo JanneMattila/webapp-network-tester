@@ -19,6 +19,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Get last run ID of workflow "ci" if input is "latest"
         if: ${{ github.event.inputs.run_id == 'latest' }}
         env:
