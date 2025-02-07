@@ -1,0 +1,94 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Tag name"
+        required: true
+      release_name:
+        description: "Release name"
+        required: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Linux artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: webappnetworktester-linux
+          path: ./artifacts/linux
+
+      - name: Download macOS artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: webappnetworktester-macos
+          path: ./artifacts/macos
+
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: webappnetworktester-windows
+          path: ./artifacts/windows
+
+      - name: Download Windows IIS artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: webappnetworktester-windows-iis
+          path: ./artifacts/windows-iis
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.inputs.tag_name }}
+          release_name: ${{ github.event.inputs.release_name }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset (Linux)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./artifacts/linux/src/WebApp/output/webappnetworktester
+          asset_name: webappnetworktester-linux
+          asset_content_type: application/octet-stream
+
+      - name: Upload Release Asset (macOS)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./artifacts/macos/src/WebApp/output/webappnetworktester
+          asset_name: webappnetworktester-macos
+          asset_content_type: application/octet-stream
+
+      - name: Upload Release Asset (Windows)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./artifacts/windows/src/WebApp/output/webappnetworktester.*
+          asset_name: webappnetworktester-windows
+          asset_content_type: application/octet-stream
+
+      - name: Upload Release Asset (Windows IIS)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./artifacts/windows-iis/src/WebApp/output/
+          asset_name: webappnetworktester-windows-iis
+          asset_content_type: application/octet-stream
