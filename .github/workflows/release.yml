@@ -58,15 +58,15 @@ jobs:
       - name: Display structure of downloaded files
         run: ls -R ./artifacts/*.zip
 
-      # - name: Release
-      #   uses: softprops/action-gh-release@v2
-      #   with:
-      #     tag_name: ${{ github.event.inputs.tag_name }}
-      #     make_latest: true
-      #     generate_release_notes: true
-      #     fail_on_unmatched_files: true
-      #     files: |
-      #       ./artifacts/webappnetworktester-linux.zip
-      #       ./artifacts/webappnetworktester-macos.zip
-      #       ./artifacts/webappnetworktester-windows.zip
-      #       ./artifacts/webappnetworktester.zip
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag_name }}
+          make_latest: true
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: |
+            ./artifacts/webappnetworktester-linux.zip
+            ./artifacts/webappnetworktester-macos.zip
+            ./artifacts/webappnetworktester-windows.zip
+            ./artifacts/webappnetworktester.zip
