@@ -10,6 +10,9 @@ on:
         description: "Run ID of the build"
         required: true
 
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -25,6 +28,16 @@ jobs:
       - name: Display structure of downloaded files
         run: ls -R ./artifacts
 
+      # Compress each artifact to a zip file
+      - name: Compress artifacts
+        run: |
+          for file in $(find ./artifacts -type d); do
+            zip -r $file.zip $file
+          done
+
+      - name: Display structure of downloaded files
+        run: ls -R ./artifacts/*.zip
+
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
@@ -33,7 +46,7 @@ jobs:
           generate_release_notes: true
           fail_on_unmatched_files: true
           files: |
-            ./artifacts/webappnetworktester-linux/*
-            ./artifacts/webappnetworktester-macos/*
-            ./artifacts/webappnetworktester-windows/*
-            ./artifacts/webappnetworktester-windows-iis/*
+            ./artifacts/webappnetworktester-linux.zip
+            ./artifacts/webappnetworktester-macos.zip
+            ./artifacts/webappnetworktester-windows.zip
+            ./artifacts/webappnetworktester-windows-iis.zip
