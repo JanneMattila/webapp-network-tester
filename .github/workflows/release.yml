@@ -36,6 +36,7 @@ jobs:
             echo "RUN_ID=${{ env.LAST_RUN_ID }}" >> $GITHUB_ENV
           else
             echo "RUN_ID=${{ github.event.inputs.run_id }}" >> $GITHUB_ENV
+          fi
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
