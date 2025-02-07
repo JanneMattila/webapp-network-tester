@@ -17,6 +17,9 @@ jobs:
           - os: windows-latest
             rid: win-x64
             singleexe: true
+          - os: windows-latest
+            rid: win-x64
+            singleexe: false
           - os: ubuntu-latest
             rid: linux-x64
             singleexe: true
