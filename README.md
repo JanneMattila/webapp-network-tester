@@ -84,46 +84,118 @@ GET: value1
 
 Here are few example command payloads:
 
-`HTTP GET http://target/`: Invokes GET request to target address `http://target/`.
+#### HTTP Request tests
 
-`HTTP POST https://target/api/commands`: Invokes POST request to target address **AND**
-passes along rest of the commands for further processing.
+Invokes GET request to target address `http://target/`:
+
+```
+HTTP GET http://target/
+```
+
+Invokes POST request to target address **AND**
+passes along rest of the commands for further processing:
+
+```
+HTTP POST https://target/api/commands
+``` 
 
 Note: Both `HTTP GET` and `HTTP POST` support sending HTTP Headers as third parameter. Here's example about that:
 
-`HTTP POST "https://echo.contoso.com/api/echo" "CustomHeader1=Value1|CustomHeader2=Value2"`
+```
+HTTP POST "https://echo.contoso.com/api/echo" "CustomHeader1=Value1|CustomHeader2=Value2"
+```
 
-`TCP localhost 44328` connects to `localhost` to port `44328` and returns `OK` if success and otherwise error message returned.
+#### Azure Blob Storage tests
 
-`BLOB GET file.csv files DefaultEndpointsProtocol=https;AccountName=account;AccountKey=key;EndpointSuffix=core.windows.net`: Downloads
-`file.csv` from container `files` using the defined connection string as last argument.
+Downloads `file.csv` from container `files` using connection string:
 
-`BLOB POST hello file.csv files DefaultEndpointsProtocol=https;AccountName=account;AccountKey=key;EndpointSuffix=core.windows.net`: Uploads
-`hello` as content to file `file.csv` at container `files` using the defined connection string as last argument.
+```
+BLOB GET file.csv files DefaultEndpointsProtocol=https;AccountName=account;AccountKey=key;EndpointSuffix=core.windows.net
+```
 
-`REDIS GET mycache account.redis.cache.windows.net:6380,password=key,ssl=True,abortConnect=False`:
-Gets item called `mycache` from the cache using the defined connection string as last argument.
+Download using managed identity authentication:
 
-`REDIS SET hello mycache account.redis.cache.windows.net:6380,password=key,ssl=True,abortConnect=False`:
-Sets value `hello` to the item called `mycache` from the cache using the defined connection string as last argument.
+```
+BLOB GET file.csv files https://account.core.windows.net/
+```
 
-`SQL QUERY "SELECT TOP (5) * FROM [SalesLT].[Customer]" "Server=tcp:server.database.windows.net,1433;Initial Catalog=db;Persist Security Info=False;User ID=user;Password=password;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"`:
-Executes defined T-SQL using the defined connection string as last argument.
+Upload `hello` as content to file `file.csv` at container `files` using connection string:
 
-`IPLOOKUP account.redis.cache.windows.net`:
-Gets ip address of the `account.redis.cache.windows.net`.
+```
+BLOB POST hello file.csv files DefaultEndpointsProtocol=https;AccountName=account;AccountKey=key;EndpointSuffix=core.windows.net
+``` 
 
-`IPLOOKUP account.redis.cache.windows.net 1.1.1.1`:
-Gets ip address of the `account.redis.cache.windows.net` using `1.1.1.1` (Cloudflare DNS) as name server.
+Upload using managed identity authentication:
 
-`NSLOOKUP account.redis.cache.windows.net`:
-Gets ip address and relevant network related information of the `account.redis.cache.windows.net`.
+```
+BLOB POST hello file.csv files https://account.core.windows.net/
+``` 
 
-`NSLOOKUP account.redis.cache.windows.net 168.63.129.16`:
-Gets ip address and relevant network related information of the `account.redis.cache.windows.net` using `168.63.129.16` (Azure DNS) as name server.
+#### Redis tests
 
-`NSLOOKUP account.redis.cache.windows.net 1.1.1.1`:
-Gets ip address and relevant network related information of the `account.redis.cache.windows.net` using `1.1.1.1` (Cloudflare DNS) as name server.
+Gets item called `mycache` from the cache using connection string:
+
+```
+REDIS GET mycache account.redis.cache.windows.net:6380,password=key,ssl=True,abortConnect=False
+```
+
+Sets value `hello` to the item called `mycache` using connection string:.
+
+```
+REDIS SET hello mycache account.redis.cache.windows.net:6380,password=key,ssl=True,abortConnect=False
+```
+
+#### SQL Server tests
+
+Executes query using connection string:
+
+```
+SQL QUERY "SELECT TOP (5) * FROM [SalesLT].[Customer]" "Server=tcp:server.database.windows.net,1433;Initial Catalog=db;Persist Security Info=False;User ID=user;Password=password;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"
+```
+
+Executes query using managed identity authentication:
+
+```
+SQL QUERY "SELECT TOP (5) * FROM [SalesLT].[Customer]" "Server=server.database.windows.net;Database=db;Authentication=ActiveDirectoryMsi;TrustServerCertificate=True;"
+```
+
+#### Networking tests
+
+Gets ip address of the `account.redis.cache.windows.net`:
+
+```
+IPLOOKUP account.redis.cache.windows.net
+```
+
+Gets ip address of the `account.redis.cache.windows.net` using `1.1.1.1` (Cloudflare DNS) as name server:
+
+```
+IPLOOKUP account.redis.cache.windows.net 1.1.1.1
+```
+
+Gets ip address and relevant network related information of the `account.redis.cache.windows.net`:
+
+```
+NSLOOKUP account.redis.cache.windows.net
+```
+
+Gets ip address and relevant network related information of the `account.redis.cache.windows.net` using `168.63.129.16` (Azure DNS) as name server:
+
+```
+NSLOOKUP account.redis.cache.windows.net 168.63.129.16
+```
+
+Gets ip address and relevant network related information of the `account.redis.cache.windows.net` using `1.1.1.1` (Cloudflare DNS) as name server:
+
+```
+NSLOOKUP account.redis.cache.windows.net 1.1.1.1
+```
+
+Test connectivity to `localhost` to port `44328`:
+
+```
+TCP localhost 44328
+```
 
 ## Architecture examples
 

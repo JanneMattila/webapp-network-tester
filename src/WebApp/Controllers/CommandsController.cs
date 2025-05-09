@@ -1,4 +1,5 @@
-﻿using Azure.Storage.Blobs;
+﻿using Azure.Identity;
+using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using DnsClient;
 using Microsoft.AspNetCore.Mvc;
@@ -217,7 +218,7 @@ public class CommandsController(ILogger<CommandsController> logger) : Controller
 - HELP: Display this help message
 - HTTP GET|POST|PUT|DELETE <url> [header1=value1|header2=value2|...]
 - TCP <host> <port>
-- BLOB <connectionString> <container> <blob> [content]
+- BLOB [content] <blob> <container> <connectionString>
 - FILE LIST|READ|WRITE <file> [content]
 - REDIS <connectionString> GET|SET <key> [value]
 - SQL <connectionString> <query>
@@ -289,7 +290,20 @@ public class CommandsController(ILogger<CommandsController> logger) : Controller
     private static async Task<string> ExecuteBlobAsync(string[] parameters)
     {
         var param = parameters.Reverse().ToArray();
-        var blobServiceClient = new BlobServiceClient(param[0]);
+        var connectionString = param[0];
+
+        BlobServiceClient blobServiceClient;
+        if (Uri.IsWellFormedUriString(connectionString, UriKind.Absolute))
+        {
+            // This is blob endpoint url only, switch to managed identity
+            var credential = new DefaultAzureCredential();
+            blobServiceClient = new BlobServiceClient(new Uri(connectionString), credential);
+        }
+        else
+        {
+            blobServiceClient = new BlobServiceClient(connectionString);
+        }
+
         var blobContainerClient = blobServiceClient.GetBlobContainerClient(param[1]);
         await blobContainerClient.CreateIfNotExistsAsync(PublicAccessType.None);
         var blobClient = blobContainerClient.GetBlobClient(param[2]);
