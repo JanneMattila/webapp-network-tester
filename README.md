@@ -37,6 +37,9 @@ It currently has support for following operations:
 | REDIS      | GET         | Gets item from cache according to parameters defining key and redis cache                  |
 | REDIS      | SET         | Sets item from cache according to parameters defining key and redis cache                  |
 | SQL        | QUERY       | Executes SQL query according to parameters                                                 |
+| SQL        | EXECUTE     | Executes a non-query SQL Server statement and returns the affected-row count                |
+| POSTGRESQL | QUERY       | Executes a query against PostgreSQL using a connection string                              |
+| POSTGRESQL | EXECUTE     | Executes a non-query PostgreSQL statement and returns the affected-row count                |
 | IPLOOKUP   | N/A         | Gets IP address of defined in parameter                                                    |
 | NSLOOKUP   | N/A         | Get IP address and relevant network related information about address defined in parameter |
 | INFO       | HOSTNAME    | Gets hostname of the container                                                             |
@@ -158,6 +161,45 @@ Executes query using managed identity authentication:
 ```
 SQL QUERY "SELECT TOP (5) * FROM [SalesLT].[Customer]" "Server=server.database.windows.net;Database=db;Authentication=ActiveDirectoryMsi;TrustServerCertificate=True;"
 ```
+
+Executes a non-query statement, such as an INSERT, UPDATE, DELETE, or DDL statement:
+
+```plain
+SQL EXECUTE "UPDATE dbo.customers SET active = 1 WHERE id = 42" "Server=server.database.windows.net;Database=db;Authentication=ActiveDirectoryMsi;TrustServerCertificate=True;"
+```
+
+`EXECUTE` returns `Rows affected: <count>` instead of a result table. The count is
+reported by the database provider; it can be `0` when no rows match or `-1` when
+no affected-row count is available (for example, some DDL statements or SQL Server
+statements with `SET NOCOUNT ON`).
+
+#### PostgreSQL tests
+
+Executes a query using an Npgsql connection string:
+
+```plain
+POSTGRESQL QUERY "SELECT current_database(), current_user, version()" "Host=localhost;Port=5432;Database=postgres;Username=user;Password=password;Timeout=30"
+```
+
+For Azure Database for PostgreSQL, use the server hostname and require TLS:
+
+```plain
+POSTGRESQL QUERY "SELECT * FROM public.customers LIMIT 5" "Host=server.postgres.database.azure.com;Port=5432;Database=db;Username=user;Password=password;SSL Mode=VerifyFull;Timeout=30"
+```
+
+Quote queries and connection strings that contain spaces. Results use the same
+semicolon-separated column names and rows as `SQL QUERY`. Empty results display
+`No rows found.` and connection or query errors are included in the command output.
+
+Execute non-query statements using the same syntax as SQL Server:
+
+```plain
+POSTGRESQL EXECUTE "UPDATE public.customers SET active = true WHERE id = 42" "Host=localhost;Port=5432;Database=postgres;Username=user;Password=password;Timeout=30"
+```
+
+`EXECUTE` returns `Rows affected: <count>` using the provider-reported count.
+Use `QUERY` for statements whose result rows should be displayed, including
+PostgreSQL statements with a `RETURNING` clause.
 
 #### Networking tests
 

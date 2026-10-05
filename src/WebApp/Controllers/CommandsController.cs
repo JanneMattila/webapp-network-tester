@@ -4,9 +4,10 @@ using Azure.Storage.Blobs.Models;
 using DnsClient;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Npgsql;
 using StackExchange.Redis;
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
@@ -119,6 +120,7 @@ public class CommandsController(ILogger<CommandsController> logger) : Controller
                         "FILE" => await ExecuteFileAsync(parameters),
                         "REDIS" => await ExecuteRedisAsync(parameters),
                         "SQL" => await ExecuteSQLAsync(parameters),
+                        "POSTGRESQL" => await ExecutePostgreSQLAsync(parameters),
                         "IPLOOKUP" => await ExecuteIpLookUpAsync(parameters),
                         "NSLOOKUP" => await ExecuteNsLookUpAsync(parameters),
                         "INFO" => ExecuteInfo(parameters),
@@ -221,7 +223,8 @@ public class CommandsController(ILogger<CommandsController> logger) : Controller
 - BLOB [content] <blob> <container> <connectionString>
 - FILE LIST|READ|WRITE <file> [content]
 - REDIS <connectionString> GET|SET <key> [value]
-- SQL <connectionString> <query>
+- SQL QUERY|EXECUTE <statement> <connectionString>
+- POSTGRESQL QUERY|EXECUTE <statement> <connectionString>
 - IPLOOKUP <host> [dnsServer]
 - NSLOOKUP <host> [dnsServer]
 - INFO HOSTNAME|NETWORK|ENV [variable]
@@ -368,23 +371,51 @@ public class CommandsController(ILogger<CommandsController> logger) : Controller
 
     private static async Task<string> ExecuteSQLAsync(string[] parameters)
     {
-        var output = new StringBuilder();
+        if (parameters.Length != 2 &&
+            (parameters.Length != 3 || parameters[0] is not ("QUERY" or "EXECUTE")))
+        {
+            throw new ArgumentException("Usage: SQL QUERY|EXECUTE <statement> <connectionString>");
+        }
+
         var param = parameters.Reverse().ToArray();
         using var connection = new SqlConnection(param[0]);
+        return await ExecuteDatabaseCommandAsync(connection, param[1],
+            parameters.Length == 3 && parameters[0] == "EXECUTE");
+    }
+
+    private static async Task<string> ExecutePostgreSQLAsync(string[] parameters)
+    {
+        if (parameters.Length != 3 || parameters[0] is not ("QUERY" or "EXECUTE"))
+        {
+            throw new ArgumentException("Usage: POSTGRESQL QUERY|EXECUTE <statement> <connectionString>");
+        }
+
+        await using var connection = new NpgsqlConnection(parameters[2]);
+        return await ExecuteDatabaseCommandAsync(connection, parameters[1], parameters[0] == "EXECUTE");
+    }
+
+    private static async Task<string> ExecuteDatabaseCommandAsync(DbConnection connection, string statement, bool execute)
+    {
+        var output = new StringBuilder();
         await connection.OpenAsync();
 
-        using var command = connection.CreateCommand();
-        command.CommandText = param[1];
-        using var reader = command.ExecuteReader();
-        var columns = reader.GetColumnSchema();
-        var columnNames = columns.Select(c => c.ColumnName);
+        await using var command = connection.CreateCommand();
+        command.CommandText = statement;
+        if (execute)
+        {
+            var rowsAffected = await command.ExecuteNonQueryAsync();
+            return $"Rows affected: {rowsAffected}";
+        }
+
+        await using var reader = await command.ExecuteReaderAsync();
+        var columnNames = Enumerable.Range(0, reader.FieldCount).Select(reader.GetName);
         output.AppendLine(string.Join(";", columnNames));
 
         if (reader.HasRows)
         {
-            while (reader.Read())
+            while (await reader.ReadAsync())
             {
-                var values = columnNames.Select(c => reader.GetProviderSpecificValue(c));
+                var values = Enumerable.Range(0, reader.FieldCount).Select(reader.GetProviderSpecificValue);
                 output.AppendLine(string.Join(";", values));
             }
         }
